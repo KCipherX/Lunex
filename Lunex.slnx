@@ -1,6 +1,6 @@
 <Solution>
   <Folder Name="/docs/">
-    <File Path="project-migrations.md" />
+    <File Path="docs/project-migrations.md" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Lunex.Api/Lunex.Api.csproj" />
@@ -10,4 +10,7 @@
     <Project Path="src/Lunex.Infrastructure/Lunex.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/" />
+  <Folder Name="/scripts/">
+    <File Path="scripts/lunex-scripts.sql" />
+  </Folder>
 </Solution>
