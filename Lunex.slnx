@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/docs/">
+    <File Path="project-migrations.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Lunex.Api/Lunex.Api.csproj" />
+    <Project Path="src/Lunex.Application/Lunex.Application.csproj" />
+    <Project Path="src/Lunex.Contracts/Lunex.Contracts.csproj" />
+    <Project Path="src/Lunex.Domain/Lunex.Domain.csproj" />
+    <Project Path="src/Lunex.Infrastructure/Lunex.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+</Solution>
