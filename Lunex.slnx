@@ -2,6 +2,11 @@
   <Folder Name="/docs/">
     <File Path="docs/project-migrations.md" />
   </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/Lunex.Api/Lunex.Api.csproj" />
     <Project Path="src/Lunex.Application/Lunex.Application.csproj" />
