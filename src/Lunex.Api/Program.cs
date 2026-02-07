@@ -1,26 +1,30 @@
+using Lunex.Api;
 using Lunex.Application;
+using Lunex.Domain.Settings;
 using Lunex.Infrastructure;
 
 using Scalar.AspNetCore;
 
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllers();
-builder.Services.AddProblemDetails();
-builder.Services.AddOpenApi();
-builder.Services.AddApplication()
-    .AddInfrastructure(builder.Configuration);
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference();
+    builder.Services.AddWebApi(builder.Configuration);
+    builder.Services.AddApplication();
+    builder.Services.AddInfrastructure(builder.Configuration);
 }
 
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
+WebApplication app = builder.Build();
+{
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapOpenApi();
+        app.MapScalarApiReference();
+    }
 
-app.Run();
+    app.UseExceptionHandler();
+    app.UseHttpsRedirection();
+    app.UseCors(CorsSettings.PolicyName);
+    app.UseAuthorization();
+    app.MapControllers();
+
+    await app.RunAsync();
+}
