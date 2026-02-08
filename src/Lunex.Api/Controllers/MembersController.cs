@@ -1,12 +1,11 @@
-﻿using Lunex.Application.Services.Interfaces;
+﻿using Lunex.Application.Members.Services.Abstractions;
 
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lunex.Api.Controllers;
 
 [Route("api/members")]
-[ApiController]
-public sealed class MembersController(IMemberService memberService) : ControllerBase
+public sealed class MembersController(IMemberService memberService) : BaseApiController
 {
     [HttpGet]
     public async Task<IActionResult> Get(CancellationToken cancellationToken)
@@ -16,7 +15,7 @@ public sealed class MembersController(IMemberService memberService) : Controller
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> Get([FromRoute] string id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById([FromRoute] string id, CancellationToken cancellationToken)
     {
         var member = await memberService.GetByIdAsync(id, cancellationToken);
         return member is null

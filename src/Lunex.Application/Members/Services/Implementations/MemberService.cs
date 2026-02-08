@@ -1,8 +1,8 @@
-﻿using Lunex.Application.Persistance.Interfaces;
-using Lunex.Application.Services.Interfaces;
+﻿using Lunex.Application.Members.Persistence.Abstractions;
+using Lunex.Application.Members.Services.Abstractions;
 using Lunex.Domain.Enitities.Users;
 
-namespace Lunex.Application.Members;
+namespace Lunex.Application.Members.Services.Implementations;
 
 public sealed class MemberService(IMemberRepository memberRepository) : IMemberService
 {

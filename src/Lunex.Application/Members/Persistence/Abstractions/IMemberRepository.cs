@@ -1,5 +1,5 @@
 ﻿using Lunex.Domain.Enitities.Users;
-namespace Lunex.Application.Persistance.Interfaces;
+namespace Lunex.Application.Members.Persistence.Abstractions;
 
 public interface IMemberRepository
 {

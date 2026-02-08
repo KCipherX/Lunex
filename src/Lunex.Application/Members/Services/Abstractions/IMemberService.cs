@@ -1,6 +1,6 @@
 ﻿using Lunex.Domain.Enitities.Users;
 
-namespace Lunex.Application.Services.Interfaces;
+namespace Lunex.Application.Members.Services.Abstractions;
 
 public interface IMemberService
 {

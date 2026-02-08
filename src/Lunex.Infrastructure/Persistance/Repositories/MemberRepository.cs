@@ -1,4 +1,4 @@
-﻿using Lunex.Application.Persistance.Interfaces;
+﻿using Lunex.Application.Members.Persistence.Abstractions;
 using Lunex.Domain.Enitities.Users;
 
 using Microsoft.EntityFrameworkCore;

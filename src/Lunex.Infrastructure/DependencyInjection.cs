@@ -1,5 +1,5 @@
-﻿using Lunex.Application.Persistance.Interfaces;
-
+﻿using Lunex.Application.Accounts.Persistance.Abstractions;
+using Lunex.Application.Members.Persistence.Abstractions;
 using Lunex.Infrastructure.Persistance;
 using Lunex.Infrastructure.Persistance.Repositories;
 using Lunex.Infrastructure.Persistence;
@@ -30,6 +30,7 @@ public static class DependencyInjection
             .UseSnakeCaseNamingConvention());
 
         services.AddScoped<IMemberRepository, MemberRepository>();
+        services.AddScoped<IAccountRepository, AccountRepository>();
 
         return services;
     }
