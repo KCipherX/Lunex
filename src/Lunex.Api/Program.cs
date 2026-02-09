@@ -8,7 +8,7 @@ using Scalar.AspNetCore;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddWebApi(builder.Configuration);
-builder.Services.AddApplication();
+builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
 WebApplication app = builder.Build();
