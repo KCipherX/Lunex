@@ -12,7 +12,7 @@ public sealed class MemberService(IMemberRepository memberRepository) : IMemberS
         return members;
     }
 
-    public async Task<User?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<User?> GetByIdAsync(string id, CancellationToken cancellationToken)
     {
         var member = await memberRepository.GetByIdAsync(id, cancellationToken);
         return member;

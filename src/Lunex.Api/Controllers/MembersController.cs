@@ -1,4 +1,5 @@
 ﻿using Lunex.Application.Members.Services.Abstractions;
+using Lunex.Domain.Enitities.Users;
 
 using Microsoft.AspNetCore.Mvc;
 

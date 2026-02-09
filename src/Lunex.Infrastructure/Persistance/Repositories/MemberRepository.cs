@@ -9,8 +9,8 @@ public sealed class MemberRepository(ApplicationDbContext dbContext) : IMemberRe
 {
     public async Task<IReadOnlyList<User>> GetAsync(CancellationToken cancellationToken)
     {
-        var users = await dbContext.Users.AsNoTracking().ToListAsync(
-            cancellationToken: cancellationToken);
+        var users = await dbContext.Users
+            .AsNoTracking().ToListAsync(cancellationToken);
         
         return users;
     }
@@ -18,8 +18,8 @@ public sealed class MemberRepository(ApplicationDbContext dbContext) : IMemberRe
     public async Task<User?> GetByIdAsync(string id, CancellationToken cancellationToken)
     {
         var user = await dbContext.Users.FirstOrDefaultAsync(
-            predicate: u => u.Id == id, 
-            cancellationToken: cancellationToken);
+            u => u.Id == id, 
+            cancellationToken);
 
         return user;
     }
