@@ -3,4 +3,4 @@
 namespace Lunex.Api.Controllers;
 
 [ApiController]
-public class BaseApiController : ControllerBase;
+public class ApiController : ControllerBase;

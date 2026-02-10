@@ -17,7 +17,7 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services, 
         IConfiguration configuration)
     {
-        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
+        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Section));
 
         services.AddScoped<IMemberService, MemberService>();
         services.AddScoped<IAccountService, AccountService>();        

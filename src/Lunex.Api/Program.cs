@@ -5,14 +5,13 @@ using Lunex.Infrastructure;
 
 using Scalar.AspNetCore;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddWebApi(builder.Configuration);
-builder.Services.AddApplication(builder.Configuration);
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddWebApi(builder.Configuration)
+    .AddApplication(builder.Configuration)
+    .AddInfrastructure(builder.Configuration);
 
-WebApplication app = builder.Build();
-
+var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -22,6 +21,7 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseCors(CorsSettings.PolicyName);
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

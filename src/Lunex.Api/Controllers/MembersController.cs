@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Lunex.Api.Controllers;
 
 [Route("api/members")]
-public sealed class MembersController(IMemberService memberService) : BaseApiController
+public sealed class MembersController(IMemberService memberService) : ApiController
 {
     [HttpGet]
     public async Task<IActionResult> Get(CancellationToken cancellationToken)
