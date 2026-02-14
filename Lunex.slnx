@@ -14,6 +14,9 @@
     <Project Path="src/Lunex.Infrastructure/Lunex.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/" />
+  <Folder Name="/docs/accounts/">
+    <File Path="account.http" />
+  </Folder>
   <Folder Name="/scripts/">
     <File Path="scripts/lunex-scripts.sql" />
   </Folder>

@@ -1,0 +1,23 @@
+﻿@host = https://localhost:5001/api/account
+@contentType = application/json
+
+### Register User
+
+POST {{host}}/register
+Content-Type: {{contentType}}
+
+{
+  "name": "Kevin Mathew",
+  "email": "kevinbmathew00@gmail.com",
+  "password": "Kevin@2185"
+}
+
+### Login User
+
+POST {{host}}/login
+Content-Type: {{contentType}}
+
+{
+  "email": "kevinbmathew00@gmail.com",
+  "password": "Kevin@2185"
+}
