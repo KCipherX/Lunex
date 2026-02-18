@@ -61,14 +61,15 @@ public static class DepencencyInjection
         return services;
     }
 
-    private static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Section));
-
+    private static IServiceCollection AddAuthentication(this IServiceCollection services, 
+        IConfiguration configuration)
+    {        
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
+        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Section));
+
         services.ConfigureOptions<JwtBearerTokenValidationConfiguration>()
-            .AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer();
 
         return services;

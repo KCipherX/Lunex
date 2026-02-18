@@ -6,7 +6,6 @@ using Lunex.Application.Accounts.Services.Abstractions;
 using Lunex.Application.Common.Services.Abstractions;
 using Lunex.Contracts.Accounts.Login;
 using Lunex.Contracts.Members.Requests;
-using Lunex.Domain.Enitities.Users;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +19,7 @@ public sealed class AccountController(
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        var user = request.ToDto(new HMACSHA512());
+        var user = request.ToDto(hmac: new());
         var emailExists = await accountService.EmailExistsAsync(user.Email);
         if (emailExists)
             return BadRequest("Email exists");
@@ -42,7 +41,7 @@ public sealed class AccountController(
         var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
         for (var i = 0; i < computedHash.Length; i++)
             if (computedHash[i] != user.PasswordHash[i])
-                return Unauthorized();
+                return Unauthorized("Invalid password");
 
         var response = user.ToDto(jwtTokenGenerator);
 

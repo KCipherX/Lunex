@@ -6,5 +6,5 @@ public sealed class CorsSettings
 
     public const string PolicyName = "lunex-policy";
 
-    public required string[] AllowedOrigins { get; set; }
+    public required string[] AllowedOrigins { get; init; }
 }

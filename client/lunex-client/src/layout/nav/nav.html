@@ -22,7 +22,7 @@
       <a>Messages</a>
     </nav>
     <div class="flex align-middle ml-auto gap-3">
-      @if (loggedIn()) {
+      @if (accountService.currentUser(); as user) {
         <div class="dropdown dropdown-end">
           <div
             tabindex="0"
@@ -30,7 +30,7 @@
             class="flex items-center text-white text-xl gap-3 cursor-pointer"
           >
             <img src="/user.png" alt="user avatar" class="w-8 h-8 rounded-full" />
-            <span>Kevin</span>
+            <span>{{ user.name }}</span>
           </div>
           <ul
             tabindex="-1"
