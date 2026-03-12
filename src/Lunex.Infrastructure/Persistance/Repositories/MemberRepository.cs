@@ -10,7 +10,8 @@ public sealed class MemberRepository(ApplicationDbContext dbContext) : IMemberRe
     public async Task<IReadOnlyList<User>> GetAsync(CancellationToken cancellationToken)
     {
         var users = await dbContext.Users
-            .AsNoTracking().ToListAsync(cancellationToken);
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
         
         return users;
     }

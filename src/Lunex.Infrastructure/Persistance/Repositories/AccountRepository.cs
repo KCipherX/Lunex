@@ -7,25 +7,25 @@ namespace Lunex.Infrastructure.Persistance.Repositories;
 
 public sealed class AccountRepository(ApplicationDbContext dbContext) : IAccountRepository
 {
-    public async Task<User?> RegisterAsync(User user)
+    public async Task<User?> RegisterAsync(User user, CancellationToken cancellationToken)
     {
-        await dbContext.Users.AddAsync(user);
-        await dbContext.SaveChangesAsync();
+        await dbContext.Users.AddAsync(user, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return user;
     }
 
-    public async Task<bool> EmailExistsAsync(string email)
+    public async Task<bool> EmailExistsAsync(string email, CancellationToken cancellationToken)
     {
         var emailExists = await dbContext.Users
-            .AnyAsync(user => user.Email.ToLower() == email.ToLower());
+            .AnyAsync(user => user.Email.ToLower() == email.ToLower(), cancellationToken);
 
         return emailExists;
     }
 
-    public async Task<User?> GetByEmailAsync(string email)
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        var user = await dbContext.Users.SingleOrDefaultAsync(x => x.Email == email);
+        var user = await dbContext.Users.SingleOrDefaultAsync(x => x.Email == email, cancellationToken);
         return user;
     }
 }

@@ -18,6 +18,7 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.AddPersistence(configuration);
+        
         return services;
     }
 
@@ -30,6 +31,7 @@ public static class DependencyInjection
             .UseSnakeCaseNamingConvention());
 
         services.AddScoped<IMemberRepository, MemberRepository>();
+
         services.AddScoped<IAccountRepository, AccountRepository>();
 
         return services;

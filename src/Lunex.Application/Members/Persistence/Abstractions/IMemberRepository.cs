@@ -3,6 +3,6 @@ namespace Lunex.Application.Members.Persistence.Abstractions;
 
 public interface IMemberRepository
 {
-    Task<IReadOnlyList<User>> GetAsync(CancellationToken cancellationToken = default);
-    Task<User?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<User>> GetAsync(CancellationToken cancellationToken);
+    Task<User?> GetByIdAsync(string id, CancellationToken cancellationToken);
 }
