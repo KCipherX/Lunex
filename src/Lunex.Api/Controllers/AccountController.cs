@@ -4,8 +4,8 @@ using System.Text;
 using Lunex.Api.Extensions.Accounts;
 using Lunex.Application.Accounts.Services.Abstractions;
 using Lunex.Application.Common.Services.Abstractions;
-using Lunex.Contracts.Accounts.Login;
-using Lunex.Contracts.Members.Requests;
+using Lunex.Contracts.Accounts.Login.Requests;
+using Lunex.Contracts.Accounts.Register.Requests;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,9 +19,9 @@ public sealed class AccountController(
 {
     [HttpPost("register")]
     public async Task<IActionResult> Register(
-        [FromBody] RegisterRequest request, CancellationToken cancellationToken)
+        [FromBody] RegisterUserRequest request, CancellationToken cancellationToken)
     {
-        var user = request.ToDto(hmac: new());
+        var user = request.FromDto(hmac: new());
         var emailExists = await accountService.EmailExistsAsync(
             user.Email, 
             cancellationToken);
@@ -39,7 +39,7 @@ public sealed class AccountController(
 
     [HttpPost("login")]
     public async Task<IActionResult> Login(
-        [FromBody] LoginRequest request, CancellationToken cancellationToken)
+        [FromBody] LoginUserRequest request, CancellationToken cancellationToken)
     {
         var user = await accountService.GetByEmailAsync(
             email: request.Email,
