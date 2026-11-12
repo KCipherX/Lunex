@@ -1,4 +1,7 @@
-﻿namespace Lunex.Domain.Enitities.Users;
+﻿using Lunex.Domain.Enitities.Members;
+using Lunex.Domain.Enitities.Photos;
+
+namespace Lunex.Domain.Enitities.Users;
 
 public sealed class User
 {
@@ -8,4 +11,10 @@ public sealed class User
     public string? ImageUrl { get; set; }
     public required byte[] PasswordHash { get; set; }
     public required byte[] PasswordSalt { get; set; }
+
+    /// <summary>
+    /// navigational property
+    /// </summary>
+    public Member Member { get; set; } = null!;
+    public ICollection<Photo> Photos { get; set; } = [];
 }

@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/docs/">
+    <File Path="docs/api-documentation.md" />
     <File Path="docs/project-migrations.md" />
   </Folder>
   <Folder Name="/Solution Items/">

@@ -1,4 +1,7 @@
-﻿using Lunex.Domain.Enitities.Users;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+using Lunex.Domain.Enitities.Photos;
+using Lunex.Domain.Enitities.Users;
 
 namespace Lunex.Domain.Enitities.Members;
 
@@ -15,8 +18,11 @@ public sealed class Member
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime LastActiveAt { get; set; } = DateTime.UtcNow;
 
+    public ICollection<Photo> Photos { get; set; } = [];
+
     /// <summary>
     /// navigational property
     /// </summary>
+    [ForeignKey(nameof(Id))]
     public User User { get; set; } = null!;
 }
