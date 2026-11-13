@@ -3,5 +3,5 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Lunex.Api.Controllers;
 
-[ApiController, Authorize]
+[ApiController]
 public class ApiController : ControllerBase;

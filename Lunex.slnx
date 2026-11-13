@@ -1,4 +1,5 @@
 <Solution>
+  <Folder Name="/Documentation/" />
   <Folder Name="/Documentation/API/">
     <File Path="docs/api-documentation.md" />
   </Folder>

@@ -9,35 +9,35 @@ using Microsoft.Extensions.Options;
 
 namespace Lunex.Infrastructure.Services;
 
-public sealed class CloudinaryService(IOptions<CloudinarySettings> options) : IPhotoService
+public sealed class PhotoService(IOptions<CloudinarySettings> options) : IPhotoService
 {
-    private readonly Cloudinary _cloudinary = new(new Account(options.Value.CloudName, options.Value.ApiKey, options.Value.ApiSecret))
+    private readonly Cloudinary _cloudinary = new(new Account(
+        options.Value.CloudName,
+        options.Value.ApiKey,
+        options.Value.ApiSecret))
     {
         Api = { Secure = true }
     };
 
     public async Task<PhotoUploadResult> UploadPhotoAsync(Stream fileStream, string fileName, string folder, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(fileStream);
+
         var uploadParams = new ImageUploadParams
         {
-            File = new FileDescription(fileName, fileStream),
-            Folder = folder,
-            Transformation = new Transformation()
-                .Width(500)
-                .Height(500)
-                .Crop("fill")
-                .Gravity("face")
+            File = new(fileName, fileStream),
+            Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face"),
+            Folder = folder
         };
 
         var uploadResult = await _cloudinary.UploadAsync(uploadParams, cancellationToken);
-
         if (uploadResult.Error != null)
         {
             throw new InvalidOperationException($"Cloudinary upload failed: {uploadResult.Error.Message}");
         }
 
         return new PhotoUploadResult(
-            uploadResult.SecureUrl.ToString(),
+            uploadResult.Url.ToString(),
             uploadResult.PublicId,
             uploadResult.Width,
             uploadResult.Height,
@@ -49,6 +49,6 @@ public sealed class CloudinaryService(IOptions<CloudinarySettings> options) : IP
         var deletionParams = new DeletionParams(publicId);
         var result = await _cloudinary.DestroyAsync(deletionParams);
 
-        return result.Result == "ok";
+        return result.Result.Equals("ok");
     }
 }

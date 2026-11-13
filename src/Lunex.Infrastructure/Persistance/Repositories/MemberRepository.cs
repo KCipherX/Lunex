@@ -1,4 +1,5 @@
-﻿using Lunex.Application.Members.Persistence.Abstractions;
+﻿using Lunex.Application.Common.Pagination;
+using Lunex.Application.Members.Persistence.Abstractions;
 using Lunex.Domain.Enitities.Members;
 using Lunex.Domain.Enitities.Photos;
 
@@ -15,13 +16,30 @@ public sealed class MemberRepository(ApplicationDbContext db) : IMemberRepositor
         return rowsAffected > 0;
     }
 
-    public async Task<IReadOnlyList<Member>> GetAsync(CancellationToken cancellationToken)
+    public async Task<PaginatedResult<Member>> GetAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        var members = await db.Members
-            .AsNoTracking()
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1) pageSize = 10;
+        if (pageSize > 100) pageSize = 100;
+
+        var query = db.Members.AsNoTracking().OrderBy(m => m.Name);
+        var count = await query.CountAsync(cancellationToken);
+        var items = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync(cancellationToken);
 
-        return members;
+        return new PaginatedResult<Member>
+        {
+            Metadata = new PaginationMetaData
+            {
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(count / (double)pageSize),
+                PageSize = pageSize,
+                TotalCount = count
+            },
+            Items = items
+        };
     }
 
     public async Task<Member?> GetByIdAsync(string id, CancellationToken cancellationToken)
@@ -81,6 +99,28 @@ public sealed class MemberRepository(ApplicationDbContext db) : IMemberRepositor
         }
 
         member.Photos.Remove(photo);
+        await db.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    public async Task<bool> SetMainPhotoAsync(string memberId, string photoId, CancellationToken cancellationToken)
+    {
+        var member = await db.Members
+            .Include(m => m.Photos)
+            .FirstOrDefaultAsync(m => m.Id == memberId, cancellationToken);
+
+        if (member is null)
+        {
+            return false;
+        }
+
+        var photo = member.Photos.FirstOrDefault(p => p.Id == photoId);
+        if (photo is null)
+        {
+            return false;
+        }
+
+        member.ImageUrl = photo.Url;
         await db.SaveChangesAsync(cancellationToken);
         return true;
     }

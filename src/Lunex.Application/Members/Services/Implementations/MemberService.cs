@@ -1,4 +1,5 @@
-﻿using Lunex.Application.Common.Services.Abstractions;
+﻿using Lunex.Application.Common.Pagination;
+using Lunex.Application.Common.Services.Abstractions;
 using Lunex.Application.Members.Mappers;
 using Lunex.Application.Members.Persistence.Abstractions;
 using Lunex.Application.Members.Services.Abstractions;
@@ -10,10 +11,15 @@ namespace Lunex.Application.Members.Services.Implementations;
 
 public sealed class MemberService(IMemberRepository memberRepository, IPhotoService photoService) : IMemberService
 {
-    public async Task<IReadOnlyList<MemberResponse>> GetAsync(CancellationToken cancellationToken)
+    public async Task<PaginatedResult<MemberResponse>> GetAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        var members = await memberRepository.GetAsync(cancellationToken);
-        return members.ToResponse();
+        var paginatedMembers = await memberRepository.GetAsync(pageNumber, pageSize, cancellationToken);
+
+        return new PaginatedResult<MemberResponse>
+        {
+            Metadata = paginatedMembers.Metadata,
+            Items = paginatedMembers.Items.Select(m => m.ToResponse()).ToList()
+        };
     }
 
     public async Task<MemberResponse?> GetByIdAsync(string id, CancellationToken cancellationToken)
@@ -86,5 +92,10 @@ public sealed class MemberService(IMemberRepository memberRepository, IPhotoServ
             memberId,
             photoId,
             cancellationToken);
+    }
+
+    public async Task<bool> SetMainPhotoAsync(string memberId, string photoId, CancellationToken cancellationToken)
+    {
+        return await memberRepository.SetMainPhotoAsync(memberId, photoId, cancellationToken);
     }
 }

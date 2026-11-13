@@ -1,6 +1,6 @@
 ﻿using Lunex.Api.Extensions.Utilities;
+using Lunex.Application.Common.Pagination;
 using Lunex.Application.Members.Services.Abstractions;
-using Lunex.Contracts.Members.Requests;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,11 +10,16 @@ namespace Lunex.Api.Controllers;
 public sealed class MembersController(IMemberService _memberService) : ApiController
 {
     [HttpGet]
-    public async Task<IActionResult> Get(CancellationToken cancellationToken)
+    public async Task<IActionResult> Get(
+        [FromQuery] PaginationParams paginationParams,
+        CancellationToken cancellationToken = default)
     {
-        var members = await _memberService.GetAsync(cancellationToken);
+        var paginatedMembers = await _memberService.GetAsync(
+            paginationParams.PageNumber,
+            paginationParams.PageSize,
+            cancellationToken);
 
-        return Ok(members);
+        return Ok(paginatedMembers);
     }
 
     [HttpGet("{id}")]
@@ -33,18 +38,8 @@ public sealed class MembersController(IMemberService _memberService) : ApiContro
         return memberPhotos is null ? NotFound() : Ok(memberPhotos);
     }
 
-    [HttpPut]
-    public async Task<IActionResult> Update([FromBody] MemberUpdateRequest request, CancellationToken cancellationToken)
-    {
-        var memberId = User.GetRequiredUserId();
-
-        var member = await _memberService.UpdateAsync(memberId, request, cancellationToken);
-
-        return member is null ? NotFound() : Ok(member);
-    }
-
-    [HttpPost("photos"), RequestSizeLimit(10_000_000)]
-    public async Task<IActionResult> UploadPhoto(IFormFile file, CancellationToken cancellationToken)
+    [HttpPost("add-photo"), RequestSizeLimit(10_000_000)]
+    public async Task<IActionResult> AddPhoto(IFormFile file, CancellationToken cancellationToken)
     {
         var memberId = User.GetRequiredUserId();
 
@@ -67,7 +62,17 @@ public sealed class MembersController(IMemberService _memberService) : ApiContro
         return Ok(photo);
     }
 
-    [HttpDelete("photos/{photoId}")]
+    [HttpPut("set-main-photo/{photoId}")]
+    public async Task<IActionResult> SetMainPhoto([FromRoute] string photoId, CancellationToken cancellationToken)
+    {
+        var memberId = User.GetRequiredUserId();
+
+        var result = await _memberService.SetMainPhotoAsync(memberId, photoId, cancellationToken);
+
+        return result ? NoContent() : NotFound();
+    }
+
+    [HttpDelete("delete-photo/{photoId}")]
     public async Task<IActionResult> DeletePhoto([FromRoute] string photoId, CancellationToken cancellationToken)
     {
         var memberId = User.GetRequiredUserId();
