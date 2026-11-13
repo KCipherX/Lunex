@@ -1,7 +1,21 @@
 <Solution>
-  <Folder Name="/docs/">
+  <Folder Name="/Documentation/API/">
     <File Path="docs/api-documentation.md" />
+  </Folder>
+  <Folder Name="/Documentation/HTTP Requests/">
+    <File Path="https/account.http" />
+    <File Path="https/members.http" />
+    <File Path="https/photos.http" />
+  </Folder>
+  <Folder Name="/Documentation/Project Guides/">
     <File Path="docs/project-migrations.md" />
+    <File Path="project-docs/architecture.md" />
+    <File Path="project-docs/deployment.md" />
+    <File Path="project-docs/development-setup.md" />
+  </Folder>
+  <Folder Name="/Documentation/Database References/">
+    <File Path="common-sql-docs/queries.md" />
+    <File Path="common-sql-docs/schema.md" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
@@ -15,11 +29,6 @@
     <Project Path="src/Lunex.Infrastructure/Lunex.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/" />
-  <Folder Name="/docs/accounts/">
-    <File Path="account.http" />
-    <File Path="common-sql-docs/queries.md" />
-    <File Path="common-sql-docs/schema.md" />
-  </Folder>
   <Folder Name="/scripts/">
     <File Path="scripts/lunex-scripts.sql" />
   </Folder>
