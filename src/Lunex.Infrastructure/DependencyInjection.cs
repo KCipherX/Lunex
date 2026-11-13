@@ -1,8 +1,10 @@
 ﻿using Lunex.Application.Accounts.Persistance.Abstractions;
+using Lunex.Application.Common.Services.Abstractions;
 using Lunex.Application.Members.Persistence.Abstractions;
 using Lunex.Infrastructure.Persistance;
 using Lunex.Infrastructure.Persistance.Repositories;
 using Lunex.Infrastructure.Persistence;
+using Lunex.Infrastructure.Services;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -18,6 +20,7 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.AddPersistence(configuration);
+        services.AddServices();
 
         return services;
     }
@@ -33,6 +36,13 @@ public static class DependencyInjection
         services.AddScoped<IMemberRepository, MemberRepository>();
 
         services.AddScoped<IAccountRepository, AccountRepository>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<IPhotoService, CloudinaryPhotoService>();
 
         return services;
     }

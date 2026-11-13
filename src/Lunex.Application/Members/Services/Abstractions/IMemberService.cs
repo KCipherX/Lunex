@@ -1,13 +1,16 @@
-﻿using Lunex.Domain.Enitities.Members;
+﻿using Lunex.Contracts.Members.Requests;
+using Lunex.Contracts.Members.Responses;
+using Lunex.Domain.Enitities.Members;
 using Lunex.Domain.Enitities.Photos;
-using Lunex.Domain.Enitities.Users;
 
 namespace Lunex.Application.Members.Services.Abstractions;
 
 public interface IMemberService
 {
-    Task<IReadOnlyList<Member>> GetAsync(CancellationToken cancellationToken);
-    Task<Member?> GetByIdAsync(string id, CancellationToken cancellationToken);
-    Task<IReadOnlyList<Photo>> GetPhotosAsync(string id, CancellationToken cancellationToken);
-    Task UpdateAsync(Member member, CancellationToken cancellationToken);
+    Task<IReadOnlyList<MemberResponse>> GetAsync(CancellationToken cancellationToken);
+    Task<MemberResponse?> GetByIdAsync(string id, CancellationToken cancellationToken);
+    Task<IReadOnlyList<PhotoResponse>> GetPhotosAsync(string id, CancellationToken cancellationToken);
+    Task<MemberResponse?> UpdateAsync(string memberId, MemberUpdateRequest request, CancellationToken cancellationToken);
+    Task<PhotoResponse> UploadPhotoAsync(string memberId, Stream fileStream, string fileName, CancellationToken cancellationToken);
+    Task<bool> DeletePhotoAsync(string memberId, string photoId, CancellationToken cancellationToken);
 }

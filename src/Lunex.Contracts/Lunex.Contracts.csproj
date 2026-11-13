@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Members\Responses\" />
+    <Compile Remove="Members\Extensions\**" />
+    <EmbeddedResource Remove="Members\Extensions\**" />
+    <None Remove="Members\Extensions\**" />
   </ItemGroup>
 
 </Project>

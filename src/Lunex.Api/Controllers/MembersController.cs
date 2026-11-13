@@ -1,7 +1,7 @@
-﻿using System.Security.Claims;
-
+﻿using Lunex.Api.Extensions.Utilities;
 using Lunex.Application.Members.Services.Abstractions;
 using Lunex.Contracts.Members.Requests;
+using Lunex.Contracts.Members.Responses;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,9 +23,7 @@ public sealed class MembersController(IMemberService _memberService) : ApiContro
     {
         var member = await _memberService.GetByIdAsync(id, cancellationToken);
 
-        return member is null
-            ? NotFound()
-            : Ok(member);
+        return member is null ? NotFound() : Ok(member);
     }
 
     [HttpGet("{id}/photos")]
@@ -33,35 +31,50 @@ public sealed class MembersController(IMemberService _memberService) : ApiContro
     {
         var memberPhotos = await _memberService.GetPhotosAsync(id, cancellationToken);
 
-        return memberPhotos is null
-            ? NotFound()
-            : Ok(memberPhotos);
+        return memberPhotos is null ? NotFound() : Ok(memberPhotos);
     }
 
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] MemberUpdateRequest request, CancellationToken cancellationToken)
     {
-        var memberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var memberId = User.GetRequiredUserId();
 
-        if (string.IsNullOrWhiteSpace(memberId))
+        var member = await _memberService.UpdateAsync(memberId, request, cancellationToken);
+
+        return member is null ? NotFound() : Ok(member);
+    }
+
+    [HttpPost("photos"), RequestSizeLimit(10_000_000)]
+    public async Task<IActionResult> UploadPhoto(IFormFile file, CancellationToken cancellationToken)
+    {
+        var memberId = User.GetRequiredUserId();
+
+        if (file is null || file.Length == 0)
         {
-            return BadRequest("Oops - no id found in token");
+            return BadRequest("No file uploaded");
         }
 
-        var member = await _memberService.GetByIdAsync(memberId, cancellationToken);
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
-        if (member is null)
+        if (!allowedExtensions.Contains(extension))
         {
-            return NotFound();
+            return BadRequest("Invalid file type. Allowed: jpg, jpeg, png, gif, webp");
         }
 
-        member.Name = request.DisplayName;
-        member.Description = request.Description;
-        member.City = request.City;
-        member.Country = request.Country;
+        using var stream = file.OpenReadStream();
+        var photo = await _memberService.UploadPhotoAsync(memberId, stream, file.FileName, cancellationToken);
 
-        await _memberService.UpdateAsync(member, cancellationToken);
+        return Ok(photo);
+    }
 
-        return Ok(member);
+    [HttpDelete("photos/{photoId}")]
+    public async Task<IActionResult> DeletePhoto([FromRoute] string photoId, CancellationToken cancellationToken)
+    {
+        var memberId = User.GetRequiredUserId();
+
+        var result = await _memberService.DeletePhotoAsync(memberId, photoId, cancellationToken);
+
+        return result ? NoContent() : NotFound();
     }
 }

@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Lunex.Contracts\Lunex.Contracts.csproj" />
     <ProjectReference Include="..\Lunex.Domain\Lunex.Domain.csproj" />
   </ItemGroup>
 

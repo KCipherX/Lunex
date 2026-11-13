@@ -50,4 +50,38 @@ public sealed class MemberRepository(ApplicationDbContext db) : IMemberRepositor
 
         await db.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task AddPhotoAsync(string memberId, Photo photo, CancellationToken cancellationToken)
+    {
+        var member = await db.Members.FirstOrDefaultAsync(m => m.Id == memberId, cancellationToken);
+        if (member is null)
+        {
+            throw new InvalidOperationException($"Member with id {memberId} not found");
+        }
+
+        member.Photos.Add(photo);
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<bool> RemovePhotoAsync(string memberId, string photoId, CancellationToken cancellationToken)
+    {
+        var member = await db.Members
+            .Include(m => m.Photos)
+            .FirstOrDefaultAsync(m => m.Id == memberId, cancellationToken);
+
+        if (member is null)
+        {
+            return false;
+        }
+
+        var photo = member.Photos.FirstOrDefault(p => p.Id == photoId);
+        if (photo is null)
+        {
+            return false;
+        }
+
+        member.Photos.Remove(photo);
+        await db.SaveChangesAsync(cancellationToken);
+        return true;
+    }
 }
