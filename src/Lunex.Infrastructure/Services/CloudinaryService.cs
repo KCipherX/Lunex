@@ -1,18 +1,17 @@
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
-using Lunex.Application.Common.Configuration;
+
+using Lunex.Application.Common.Configurations;
 using Lunex.Application.Common.Services.Abstractions;
 using Lunex.Contracts.Members.Responses;
+
 using Microsoft.Extensions.Options;
 
 namespace Lunex.Infrastructure.Services;
 
-public sealed class CloudinaryPhotoService(IOptions<CloudinarySettings> options) : IPhotoService
+public sealed class CloudinaryService(IOptions<CloudinarySettings> options) : IPhotoService
 {
-    private readonly Cloudinary _cloudinary = new(new Account(
-        options.Value.CloudName,
-        options.Value.ApiKey,
-        options.Value.ApiSecret))
+    private readonly Cloudinary _cloudinary = new(new Account(options.Value.CloudName, options.Value.ApiKey, options.Value.ApiSecret))
     {
         Api = { Secure = true }
     };

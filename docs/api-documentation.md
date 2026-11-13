@@ -1,522 +1,196 @@
-# Lunex API Documentation
+# Lunex API Reference
 
-## Overview
+This document describes the HTTP API currently implemented by Lunex. It documents implemented behavior only; planned endpoints and unsupported query parameters are omitted.
 
-The Lunex API provides RESTful endpoints for user account management and member operations. All endpoints return JSON responses and use standard HTTP status codes.
+## Base URL and OpenAPI
 
-**Base URL:** `https://api.lunex.com/api` (adjust for your environment)
+Use the API origin for your environment. The local HTTP request examples in [`https/account.http`](../https/account.http), [`https/members.http`](../https/members.http), and [`https/photos.http`](../https/photos.http) use `https://localhost:5001`.
 
-**API Documentation UI:** Available at `/scalar/v1` when running in Development environment (Scalar OpenAPI viewer)
+In Development, the API exposes an OpenAPI document at `/openapi/v1.json` and the Scalar UI at `/scalar/v1`. These routes are not mapped by the application outside Development.
 
----
+All routes below are relative to the API origin. JSON request and response property names use camel case.
 
 ## Authentication
 
-Most endpoints require authentication via JWT Bearer token. Include the token in the Authorization header:
+`POST /api/account/register` and `POST /api/account/login` allow anonymous requests. The members controller inherits `[Authorize]`; all `/api/members` routes require a valid bearer token.
 
-```
-Authorization: Bearer <your-jwt-token>
-```
+For authenticated requests, send:
 
-Tokens are obtained via the `/api/account/login` or `/api/account/register` endpoints.
-
-### JWT Token Details
-
-- **Algorithm:** HS512 (HMAC SHA-512)
-- **Expiry:** Configurable via `JwtSettings:ExpiryMinutes` (default: 60 minutes)
-- **Claims:** Contains user ID, email, and name
-
----
-
-## Account Endpoints
-
-### Register User
-
-Creates a new user account and returns a JWT token for authentication.
-
-**Endpoint:** `POST /api/account/register`
-
-**Headers:**
-```
-Content-Type: application/json
-```
-
-**Request Body:**
-```json
-{
-  "name": "John Doe",
-  "email": "john.doe@example.com",
-  "password": "SecurePass123!"
-}
-```
-
-| Field | Type | Required | Validation Rules | Description |
-|-------|------|----------|------------------|-------------|
-| name | string | Yes | Min: 1, Max: 100 chars | User's full name |
-| email | string | Yes | Valid email format, Max: 255 chars, Unique | User's email address |
-| password | string | Yes | Min: 8 chars, Max: 100 chars, Must contain: uppercase, lowercase, number, special char | User's password |
-
-**Response (200 OK):**
-```json
-{
-  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "email": "john.doe@example.com",
-  "name": "John Doe",
-  "imageUrl": "",
-  "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-**Error Responses:**
-
-| Status | Condition | Response Body |
-|--------|-----------|---------------|
-| 400 | Email already exists | `{"message": "Email exists"}` |
-| 400 | Validation failed | `{"type": "https://tools.ietf.org/html/rfc7231#section-6.5.1", "title": "One or more validation errors occurred.", "status": 400, "errors": {"email": ["The email field is required."]}}` |
-
-**cURL Example:**
-```bash
-curl -X POST https://api.lunex.com/api/account/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Doe",
-    "email": "john.doe@example.com",
-    "password": "SecurePass123!"
-  }'
-```
-
----
-
-### Login User
-
-Authenticates a user and returns a JWT token.
-
-**Endpoint:** `POST /api/account/login`
-
-**Headers:**
-```
-Content-Type: application/json
-```
-
-**Request Body:**
-```json
-{
-  "email": "john.doe@example.com",
-  "password": "SecurePass123!"
-}
-```
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| email | string | Yes | User's registered email address |
-| password | string | Yes | User's password |
-
-**Response (200 OK):**
-```json
-{
-  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "email": "john.doe@example.com",
-  "name": "John Doe",
-  "imageUrl": "",
-  "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-**Error Responses:**
-
-| Status | Condition | Response Body |
-|--------|-----------|---------------|
-| 401 | Invalid email | `{"message": "Invalid email address"}` |
-| 401 | Invalid password | `{"message": "Invalid password"}` |
-
-**cURL Example:**
-```bash
-curl -X POST https://api.lunex.com/api/account/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "john.doe@example.com",
-    "password": "SecurePass123!"
-  }'
-```
-
----
-
-## Member Endpoints
-
-### Get All Members
-
-Retrieves a list of all members. Requires authentication.
-
-**Endpoint:** `GET /api/members`
-
-**Headers:**
-```
-Authorization: Bearer <token>
-Content-Type: application/json
-```
-
-**Query Parameters (Planned):**
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| page | integer | 1 | Page number for pagination |
-| pageSize | integer | 20 | Number of items per page (max: 100) |
-| search | string | - | Search by name or email |
-| sortBy | string | createdAt | Sort field (createdAt, name, email) |
-| sortOrder | string | desc | Sort order (asc, desc) |
-
-**Response (200 OK):**
-```json
-[
-  {
-    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    "dateOfBirth": "1990-05-15",
-    "imageUrl": "https://example.com/avatar.jpg",
-    "name": "Jane Smith",
-    "gender": "Female",
-    "description": "Software developer passionate about AI",
-    "city": "San Francisco",
-    "country": "USA",
-    "createdAt": "2026-01-15T10:30:00Z",
-    "lastActiveAt": "2026-02-09T14:22:00Z"
-  },
-  {
-    "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
-    "dateOfBirth": "1985-12-22",
-    "imageUrl": "",
-    "name": "Bob Wilson",
-    "gender": "Male",
-    "description": "Full-stack engineer",
-    "city": "New York",
-    "country": "USA",
-    "createdAt": "2026-01-20T08:15:00Z",
-    "lastActiveAt": "2026-02-08T16:45:00Z"
-  }
-]
-```
-
-**Error Responses:**
-
-| Status | Condition | Response Body |
-|--------|-----------|---------------|
-| 401 | Missing/invalid token | `{"type": "https://tools.ietf.org/html/rfc7235", "title": "Unauthorized", "status": 401}` |
-
-**cURL Example:**
-```bash
-curl -X GET "https://api.lunex.com/api/members?page=1&pageSize=10&sortBy=name&sortOrder=asc" \
-  -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9..."
-```
-
----
-
-### Get Member by ID
-
-Retrieves a specific member by their ID. Requires authentication.
-
-**Endpoint:** `GET /api/members/{id}`
-
-**Headers:**
-```
+```http
 Authorization: Bearer <token>
 ```
 
-**Path Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| id | string | Member's unique identifier (GUID format) |
+Registration and login return a token in the `token` property of the response. Send that token on subsequent member requests. A missing or invalid token is rejected by ASP.NET Core authorization middleware with `401 Unauthorized`.
 
-**Response (200 OK):**
+## Endpoints
+
+| Method | Route | Authentication | Description |
+|---|---|---|---|
+| `POST` | `/api/account/register` | Anonymous | Register an account and return its user data and token |
+| `POST` | `/api/account/login` | Anonymous | Authenticate and return user data and token |
+| `GET` | `/api/members` | Bearer token | List members |
+| `GET` | `/api/members/{id}` | Bearer token | Get a member by ID |
+| `GET` | `/api/members/{id}/photos` | Bearer token | List a member's photos |
+| `PUT` | `/api/members` | Bearer token | Update the authenticated member's profile |
+| `POST` | `/api/members/photos` | Bearer token | Upload a photo for the authenticated member |
+| `DELETE` | `/api/members/photos/{photoId}` | Bearer token | Delete a photo belonging to the authenticated member |
+
+### Register
+
+`POST /api/account/register`
+
+Content type: `application/json`.
+
 ```json
 {
-  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "dateOfBirth": "1990-05-15",
-  "imageUrl": "https://example.com/avatar.jpg",
-  "name": "Jane Smith",
+  "name": "Jordan Lee",
+  "email": "jordan@example.com",
+  "password": "ExamplePass123!",
   "gender": "Female",
-  "description": "Software developer passionate about AI",
-  "city": "San Francisco",
-  "country": "USA",
-  "createdAt": "2026-01-15T10:30:00Z",
-  "lastActiveAt": "2026-02-09T14:22:00Z"
+  "city": "Toronto",
+  "country": "Canada",
+  "dateOfBirth": "1990-01-15",
+  "description": "Software developer"
 }
 ```
 
-**Error Responses:**
+| Property | Type | Required | Constraints |
+|---|---|---|---|
+| `name` | string | Yes | 2?100 characters |
+| `email` | string | Yes | Email address; at most 256 characters |
+| `password` | string | Yes | 8?100 characters |
+| `gender` | string | Yes | At most 20 characters |
+| `city` | string | Yes | At most 100 characters |
+| `country` | string | Yes | At most 100 characters |
+| `dateOfBirth` | date string | Yes | `YYYY-MM-DD` (`DateOnly`) |
+| `description` | string or null | No | At most 500 characters; defaults to null |
 
-| Status | Condition | Response Body |
-|--------|-----------|---------------|
-| 401 | Missing/invalid token | `{"type": "https://tools.ietf.org/html/rfc7235", "title": "Unauthorized", "status": 401}` |
-| 404 | Member not found | `{"type": "https://tools.ietf.org/html/rfc7231#section-6.5.4", "title": "Not Found", "status": 404}` |
+On success, returns `200 OK`:
 
-**cURL Example:**
-```bash
-curl -X GET https://api.lunex.com/api/members/a1b2c3d4-e5f6-7890-abcd-ef1234567890 \
-  -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9..."
-```
-
----
-
-## Data Models
-
-### UserResponse
-
-Returned by authentication endpoints.
-
-| Field | Type | Nullable | Description |
-|-------|------|----------|-------------|
-| id | string | No | Unique user identifier (GUID) |
-| email | string | No | User's email address |
-| name | string | No | User's full name |
-| imageUrl | string | No | Profile image URL (empty string if not set) |
-| token | string | No | JWT authentication token |
-
-### RegisterUserRequest
-
-| Field | Type | Nullable | Validation |
-|-------|------|----------|------------|
-| name | string | No | Required, 1-100 chars |
-| email | string | No | Required, valid email, unique |
-| password | string | No | Required, 8-100 chars, complexity requirements |
-
-### LoginUserRequest
-
-| Field | Type | Nullable | Validation |
-|-------|------|----------|------------|
-| email | string | No | Required, valid email |
-| password | string | No | Required |
-
-### Member (User with Member Profile)
-
-| Field | Type | Nullable | Description |
-|-------|------|----------|-------------|
-| id | string | No | Unique identifier (GUID) |
-| dateOfBirth | date | No | Member's date of birth (ISO 8601) |
-| imageUrl | string | Yes | Profile image URL |
-| name | string | No | Member's full name |
-| gender | string | No | Member's gender |
-| description | string | No | Member's description/bio |
-| city | string | No | Member's city |
-| country | string | No | Member's country |
-| createdAt | datetime | No | Timestamp when member was created (ISO 8601 UTC) |
-| lastActiveAt | datetime | No | Timestamp of last activity (ISO 8601 UTC) |
-
----
-
-## HTTP Status Codes
-
-| Code | Description |
-|------|-------------|
-| 200 | Success |
-| 400 | Bad Request - Invalid input or validation failed |
-| 401 | Unauthorized - Missing or invalid authentication |
-| 404 | Not Found - Resource not found |
-| 500 | Internal Server Error |
-
----
-
-## Error Response Format
-
-The API uses RFC 7807 Problem Details for error responses.
-
-### Validation Error (400)
 ```json
 {
-  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
-  "title": "One or more validation errors occurred.",
-  "status": 400,
-  "errors": {
-    "email": ["The email field is required.", "Invalid email format."],
-    "password": ["Password must be at least 8 characters."]
-  }
+  "id": "member-user-id",
+  "email": "jordan@example.com",
+  "name": "Jordan Lee",
+  "imageUrl": "",
+  "token": "<jwt>"
 }
 ```
 
-### Unauthorized (401)
+If the email is already in use, returns `400 Bad Request` with the message `Email exists`. Invalid request fields are rejected by API model validation with `400 Bad Request`.
+
+### Login
+
+`POST /api/account/login`
+
+Content type: `application/json`.
+
 ```json
 {
-  "type": "https://tools.ietf.org/html/rfc7235",
-  "title": "Unauthorized",
-  "status": 401
+  "email": "jordan@example.com",
+  "password": "ExamplePass123!"
 }
 ```
 
-### Not Found (404)
+On success, returns `200 OK` with the same `UserResponse` shape as registration. An unrecognized email returns `401 Unauthorized` with `Invalid email address`; a password mismatch returns `401 Unauthorized` with `Invalid password`.
+
+### List members
+
+`GET /api/members`
+
+Requires a bearer token. No pagination, search, or sorting query parameters are currently implemented. Returns `200 OK` with an array of `MemberResponse` objects; an empty array is possible.
+
+### Get a member
+
+`GET /api/members/{id}`
+
+Requires a bearer token. `id` is the member identifier (string). Returns `200 OK` with a `MemberResponse`, or `404 Not Found` if no member with that ID exists.
+
+### Get member photos
+
+`GET /api/members/{id}/photos`
+
+Requires a bearer token. Returns `200 OK` with an array of `PhotoResponse` objects for the member (which may be empty).
+
+### Update the authenticated member
+
+`PUT /api/members`
+
+Requires a bearer token. The member ID is taken from the authenticated user's token; do not send an ID in the body. Content type: `application/json`.
+
 ```json
 {
-  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.4",
-  "title": "Not Found",
-  "status": 404
+  "displayName": "Jordan Lee",
+  "description": "Updated profile description",
+  "city": "Toronto",
+  "country": "Canada"
 }
 ```
 
-### Server Error (500)
+All four properties are strings. Returns `200 OK` with the updated `MemberResponse`, or `404 Not Found` if the authenticated user has no member profile.
+
+### Upload a photo
+
+`POST /api/members/photos`
+
+Requires a bearer token. Send `multipart/form-data` with a file part named `file`. The request limit is 10,000,000 bytes (10 MB). The filename extension must be `.jpg`, `.jpeg`, `.png`, `.gif`, or `.webp` (case-insensitive).
+
+Returns `200 OK` with the stored photo:
+
 ```json
 {
-  "type": "https://tools.ietf.org/html/rfc7231#section-6.6.1",
-  "title": "Server Error",
-  "status": 500
+  "id": "photo-id",
+  "url": "https://example.invalid/photo.jpg",
+  "publicId": "members/member-id/photo-id"
 }
 ```
 
----
+An empty or missing file returns `400 Bad Request` (`No file uploaded`); an unsupported extension returns `400 Bad Request` (`Invalid file type. Allowed: jpg, jpeg, png, gif, webp`). Actual image storage is handled by the configured photo provider.
 
-## Rate Limiting
+### Delete a photo
 
-**Current Status:** Not implemented
+`DELETE /api/members/photos/{photoId}`
 
-**Planned Implementation:**
-- **Anonymous endpoints** (register, login): 10 requests/minute per IP
-- **Authenticated endpoints**: 100 requests/minute per user
-- **Headers returned:**
-  - `X-RateLimit-Limit`: Request limit
-  - `X-RateLimit-Remaining`: Remaining requests
-  - `X-RateLimit-Reset`: Unix timestamp when limit resets
+Requires a bearer token. A member can delete only a photo associated with their own member profile. Returns `204 No Content` when deleted, or `404 Not Found` when the photo is not found for that member.
 
----
+## Response models
 
-## API Documentation (Swagger/OpenAPI)
+### `UserResponse`
 
-The API uses **Scalar** as the OpenAPI documentation viewer (modern alternative to Swagger UI).
+| Property | Type | Notes |
+|---|---|---|
+| `id` | string | User identifier |
+| `email` | string | Email address |
+| `name` | string | Display name |
+| `imageUrl` | string | Currently returned as an empty string by account responses |
+| `token` | string | JWT bearer token |
 
-### Accessing Documentation
+### `MemberResponse`
 
-**Development Environment:**
-- URL: `https://localhost:<port>/scalar/v1`
-- OpenAPI JSON: `https://localhost:<port>/openapi/v1.json`
+| Property | Type | Notes |
+|---|---|---|
+| `id` | string | Member identifier |
+| `name` | string | Member name |
+| `gender` | string | Gender value supplied at registration |
+| `description` | string | Member description |
+| `city` | string | City |
+| `country` | string | Country |
+| `imageUrl` | string or null | Profile image URL, when available |
+| `dateOfBirth` | date string | `YYYY-MM-DD` |
+| `createdAt` | date-time string | Member creation time |
+| `lastActiveAt` | date-time string | Last active time |
+| `photos` | array of `PhotoResponse` | Member photo records |
 
-**Production:** Documentation UI is disabled in non-Development environments for security.
+### `PhotoResponse`
 
-### Configuration
+| Property | Type | Notes |
+|---|---|---|
+| `id` | string | Photo identifier |
+| `url` | string | Stored photo URL |
+| `publicId` | string or null | Provider-side identifier, when present |
 
-The OpenAPI specification is generated automatically from:
-- Controller action attributes (`[HttpGet]`, `[HttpPost]`, etc.)
-- Route attributes (`[Route("api/account")]`)
-- Parameter attributes (`[FromBody]`, `[FromRoute]`, `[FromQuery]`)
-- XML comments (if enabled)
+## HTTP status codes
 
-### Adding XML Comments
+The status codes returned by each action are listed above. In particular, account registration and login return `200 OK` on success; this API does not currently return `201 Created` for registration. Member endpoints return `401 Unauthorized` when authentication is absent or invalid, `404 Not Found` for missing resources where noted, and upload validation failures return `400 Bad Request`.
 
-To enrich the OpenAPI spec with descriptions, add XML documentation to controllers:
-
-```csharp
-/// <summary>
-/// Registers a new user account
-/// </summary>
-/// <param name="request">Registration details</param>
-/// <param name="cancellationToken">Cancellation token</param>
-/// <returns>User details with JWT token</returns>
-/// <response code="200">Registration successful</response>
-/// <response code="400">Email already exists or validation failed</response>
-[HttpPost("register")]
-[ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
-[ProducesResponseType(StatusCodes.Status400BadRequest)]
-public async Task<IActionResult> Register(...)
-```
-
----
-
-## CORS Configuration
-
-The API supports Cross-Origin Resource Sharing (CORS) with the following settings:
-
-- **Allowed Origins:** Configured via `CorsSettings:AllowedOrigins` in appsettings.json
-- **Allowed Headers:** All (`AllowAnyHeader()`)
-- **Allowed Methods:** All (`AllowAnyMethod()`)
-- **Credentials:** Allowed (`AllowCredentials()`)
-
-Example configuration:
-```json
-{
-  "CorsSettings": {
-    "AllowedOrigins": [
-      "http://localhost:4200",
-      "https://app.lunex.com"
-    ]
-  }
-}
-```
-
----
-
-## Example Usage Workflows
-
-### Complete Authentication Flow
-
-```bash
-# 1. Register a new user
-REGISTER_RESPONSE=$(curl -s -X POST https://api.lunex.com/api/account/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Doe",
-    "email": "john.doe@example.com",
-    "password": "SecurePass123!"
-  }')
-
-# Extract token (requires jq)
-TOKEN=$(echo $REGISTER_RESPONSE | jq -r '.token')
-
-# 2. Use token to get members
-curl -X GET https://api.lunex.com/api/members \
-  -H "Authorization: Bearer $TOKEN"
-
-# 3. Get specific member
-curl -X GET https://api.lunex.com/api/members/a1b2c3d4-e5f6-7890-abcd-ef1234567890 \
-  -H "Authorization: Bearer $TOKEN"
-```
-
-### Login Flow
-
-```bash
-# Login
-LOGIN_RESPONSE=$(curl -s -X POST https://api.lunex.com/api/account/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "john.doe@example.com",
-    "password": "SecurePass123!"
-  }')
-
-TOKEN=$(echo $LOGIN_RESPONSE | jq -r '.token')
-
-# Use token for authenticated requests
-curl -X GET https://api.lunex.com/api/members \
-  -H "Authorization: Bearer $TOKEN"
-```
-
----
-
-## Version
-
-Current API Version: **v1**
-
-Versioning Strategy: URL path versioning planned (`/api/v1/...`)
-
----
-
-## Changelog
-
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0.0 | 2026-02-09 | Initial API release with account (register, login) and member (list, get by ID) endpoints |
-| 1.1.0 | 2026-02-12 | Added comprehensive API documentation with examples, validation rules, error formats, and Scalar/OpenAPI integration details |
-
----
-
-## Future Endpoints (Planned)
-
-The following endpoints are planned for future releases:
-
-### Member Management
-- `POST /api/members` - Create member profile
-- `PUT /api/members/{id}` - Update member profile
-- `DELETE /api/members/{id}` - Delete member profile
-- `POST /api/members/{id}/avatar` - Upload profile image
-
-### Account Management
-- `PUT /api/account/password` - Change password
-- `PUT /api/account/profile` - Update profile (name, image)
-- `POST /api/account/refresh` - Refresh JWT token
-- `POST /api/account/logout` - Invalidate token (blocklist)
-
-### Search & Discovery
-- `GET /api/members/search` - Advanced member search with filters
-- `GET /api/members/nearby` - Location-based member discovery
+ASP.NET Core's API controller and authorization middleware may format framework-generated error bodies differently from the plain error messages returned explicitly by account actions. Clients should rely primarily on the HTTP status code and handle response bodies as appropriate.

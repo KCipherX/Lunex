@@ -1,7 +1,6 @@
 ﻿using Lunex.Api.Extensions.Utilities;
 using Lunex.Application.Members.Services.Abstractions;
 using Lunex.Contracts.Members.Requests;
-using Lunex.Contracts.Members.Responses;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,21 +48,21 @@ public sealed class MembersController(IMemberService _memberService) : ApiContro
     {
         var memberId = User.GetRequiredUserId();
 
-        if (file is null || file.Length == 0)
-        {
-            return BadRequest("No file uploaded");
-        }
+        if (file is null || file.Length <= 0) return BadRequest("No file uploaded");
 
         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
-        if (!allowedExtensions.Contains(extension))
-        {
-            return BadRequest("Invalid file type. Allowed: jpg, jpeg, png, gif, webp");
-        }
+        if (!allowedExtensions.Contains(extension)) return BadRequest("Invalid file type. Allowed: jpg, jpeg, png, gif, webp");
 
         using var stream = file.OpenReadStream();
-        var photo = await _memberService.UploadPhotoAsync(memberId, stream, file.FileName, cancellationToken);
+
+        var photo = await _memberService.UploadPhotoAsync(
+            memberId,
+            stream,
+            file.FileName,
+            cancellationToken);
 
         return Ok(photo);
     }
@@ -73,7 +72,10 @@ public sealed class MembersController(IMemberService _memberService) : ApiContro
     {
         var memberId = User.GetRequiredUserId();
 
-        var result = await _memberService.DeletePhotoAsync(memberId, photoId, cancellationToken);
+        var result = await _memberService.DeletePhotoAsync(
+            memberId,
+            photoId,
+            cancellationToken);
 
         return result ? NoContent() : NotFound();
     }

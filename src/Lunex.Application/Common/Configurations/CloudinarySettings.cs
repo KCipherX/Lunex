@@ -1,4 +1,4 @@
-namespace Lunex.Application.Common.Configuration;
+namespace Lunex.Application.Common.Configurations;
 
 public sealed class CloudinarySettings
 {

@@ -1,0 +1,67 @@
+@host = https://localhost:5001/api/members
+@contentType = application/json
+@authToken = YOUR_JWT_TOKEN_HERE
+
+### Get Member Photos
+
+GET {{host}}/a1b2c3d4-e5f6-7890-abcd-ef1234567890/photos
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+### Upload Photo (multipart/form-data)
+
+POST {{host}}/photos
+Authorization: Bearer {{authToken}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="profile.jpg"
+Content-Type: image/jpeg
+
+< ./profile.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Delete Photo
+
+DELETE {{host}}/photos/photo-id-here
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+---
+
+### Photo Upload Response Format
+
+```json
+{
+  "id": "photo-guid",
+  "url": "https://res.cloudinary.com/your-cloud/image/upload/v1234567890/members/user-id/photo-guid.jpg",
+  "publicId": "members/user-id/photo-guid"
+}
+```
+
+### Photo Upload Result (from Cloudinary)
+
+```json
+{
+  "url": "https://res.cloudinary.com/your-cloud/image/upload/v1234567890/members/user-id/photo-guid.jpg",
+  "publicId": "members/user-id/photo-guid",
+  "width": 500,
+  "height": 500,
+  "format": "jpg"
+}
+```
+
+### Allowed File Types
+- jpg, jpeg
+- png
+- gif
+- webp
+
+### File Size Limit
+- Maximum: 10 MB (10,000,000 bytes)
+
+### Cloudinary Transformation
+- Width: 500px
+- Height: 500px
+- Crop: fill
+- Gravity: face (auto-detects face for cropping)

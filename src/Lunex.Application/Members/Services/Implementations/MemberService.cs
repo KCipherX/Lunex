@@ -4,7 +4,6 @@ using Lunex.Application.Members.Persistence.Abstractions;
 using Lunex.Application.Members.Services.Abstractions;
 using Lunex.Contracts.Members.Requests;
 using Lunex.Contracts.Members.Responses;
-using Lunex.Domain.Enitities.Members;
 using Lunex.Domain.Enitities.Photos;
 
 namespace Lunex.Application.Members.Services.Implementations;
@@ -49,7 +48,11 @@ public sealed class MemberService(IMemberRepository memberRepository, IPhotoServ
 
     public async Task<PhotoResponse> UploadPhotoAsync(string memberId, Stream fileStream, string fileName, CancellationToken cancellationToken)
     {
-        var uploadResult = await photoService.UploadPhotoAsync(fileStream, fileName, $"members/{memberId}", cancellationToken);
+        var uploadResult = await photoService.UploadPhotoAsync(
+            fileStream,
+            fileName,
+            $"members/{memberId}",
+            cancellationToken);
 
         var photo = new Photo
         {
@@ -57,26 +60,31 @@ public sealed class MemberService(IMemberRepository memberRepository, IPhotoServ
             PublicId = uploadResult.PublicId
         };
 
-        await memberRepository.AddPhotoAsync(memberId, photo, cancellationToken);
+        await memberRepository.AddPhotoAsync(
+            memberId,
+            photo,
+            cancellationToken);
 
         return photo.ToResponse();
     }
 
     public async Task<bool> DeletePhotoAsync(string memberId, string photoId, CancellationToken cancellationToken)
     {
-        var photos = await memberRepository.GetPhotosAsync(memberId, cancellationToken);
+        var photos = await memberRepository.GetPhotosAsync(
+            memberId,
+            cancellationToken);
+
         var photo = photos.FirstOrDefault(p => p.Id == photoId);
 
         if (photo is null)
-        {
             return false;
-        }
 
         if (!string.IsNullOrEmpty(photo.PublicId))
-        {
             await photoService.DeletePhotoAsync(photo.PublicId, cancellationToken);
-        }
 
-        return await memberRepository.RemovePhotoAsync(memberId, photoId, cancellationToken);
+        return await memberRepository.RemovePhotoAsync(
+            memberId,
+            photoId,
+            cancellationToken);
     }
 }

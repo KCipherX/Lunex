@@ -1,0 +1,53 @@
+@host = https://localhost:5001/api/members
+@contentType = application/json
+@authToken = YOUR_JWT_TOKEN_HERE
+
+### Get All Members
+
+GET {{host}}
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+### Get Member by ID
+
+GET {{host}}/a1b2c3d4-e5f6-7890-abcd-ef1234567890
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+### Get Member Photos
+
+GET {{host}}/a1b2c3d4-e5f6-7890-abcd-ef1234567890/photos
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+### Update Member Profile
+
+PUT {{host}}
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "displayName": "Updated Name",
+  "description": "Updated description",
+  "city": "San Francisco",
+  "country": "USA"
+}
+
+### Upload Photo
+
+POST {{host}}/photos
+Authorization: Bearer {{authToken}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="avatar.jpg"
+Content-Type: image/jpeg
+
+< ./avatar.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Delete Photo
+
+DELETE {{host}}/photos/photo-id-here
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}

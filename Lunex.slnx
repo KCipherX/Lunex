@@ -17,6 +17,8 @@
   <Folder Name="/tests/" />
   <Folder Name="/docs/accounts/">
     <File Path="account.http" />
+    <File Path="common-sql-docs/queries.md" />
+    <File Path="common-sql-docs/schema.md" />
   </Folder>
   <Folder Name="/scripts/">
     <File Path="scripts/lunex-scripts.sql" />

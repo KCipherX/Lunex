@@ -1,7 +1,5 @@
 ﻿using Lunex.Contracts.Members.Requests;
 using Lunex.Contracts.Members.Responses;
-using Lunex.Domain.Enitities.Members;
-using Lunex.Domain.Enitities.Photos;
 
 namespace Lunex.Application.Members.Services.Abstractions;
 

@@ -1,6 +1,5 @@
 ﻿using Lunex.Application.Accounts.Services.Abstractions;
 using Lunex.Application.Accounts.Services.Implementations;
-using Lunex.Application.Common.Configuration;
 using Lunex.Application.Common.Configurations;
 using Lunex.Application.Common.Services.Abstractions;
 using Lunex.Application.Common.Services.Implementations;

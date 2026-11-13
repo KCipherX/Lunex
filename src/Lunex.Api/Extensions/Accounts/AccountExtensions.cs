@@ -17,11 +17,31 @@ public static class AccountExtensions
         string.Empty,
         jwtTokenGenerator.GenerateToken(user));
 
-    public static User FromDto(this RegisterUserRequest request, HMACSHA512 hmac) => new()
+    public static User FromDto(this RegisterUserRequest request, HMACSHA512 hmac = null!)
     {
-        Name = request.Name,
-        Email = request.Email,
-        PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password)),
-        PasswordSalt = hmac.Key
-    };
+        hmac ??= new();
+        var userId = Guid.NewGuid().ToString();
+        var user = new User
+        {
+            Id = userId,
+            Name = request.Name,
+            Email = request.Email,
+            PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password)),
+            PasswordSalt = hmac.Key,
+            Member = new()
+            {
+                Id = userId,
+                Name = request.Name,
+                Gender = request.Gender,
+                City = request.City,
+                Country = request.Country,
+                DateOfBirth = request.DateOfBirth,
+                Description = request.Description ?? string.Empty,
+                CreatedAt = DateTime.UtcNow,
+                LastActiveAt = DateTime.UtcNow,
+            }
+        };
+
+        return user;
+    }
 }

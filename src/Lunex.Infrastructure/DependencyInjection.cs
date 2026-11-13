@@ -42,7 +42,7 @@ public static class DependencyInjection
 
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddScoped<IPhotoService, CloudinaryPhotoService>();
+        services.AddScoped<IPhotoService, CloudinaryService>();
 
         return services;
     }

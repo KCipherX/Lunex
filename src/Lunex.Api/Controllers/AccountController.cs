@@ -18,7 +18,7 @@ public sealed class AccountController(IAccountService accountService, IJwtTokenG
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterUserRequest request, CancellationToken cancellationToken)
     {
-        var user = request.FromDto(hmac: new());
+        var user = request.FromDto();
 
         var emailExists = await accountService.EmailExistsAsync(
             user.Email,
