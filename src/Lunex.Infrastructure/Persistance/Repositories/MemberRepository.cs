@@ -1,27 +1,53 @@
 ﻿using Lunex.Application.Members.Persistence.Abstractions;
-using Lunex.Domain.Enitities.Users;
+using Lunex.Domain.Enitities.Members;
+using Lunex.Domain.Enitities.Photos;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace Lunex.Infrastructure.Persistance.Repositories;
 
-public sealed class MemberRepository(ApplicationDbContext dbContext) : IMemberRepository
+public sealed class MemberRepository(ApplicationDbContext db) : IMemberRepository
 {
-    public async Task<IReadOnlyList<User>> GetAsync(CancellationToken cancellationToken)
+    public async Task<bool> CommitAsync(CancellationToken cancellationToken)
     {
-        var users = await dbContext.Users
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
-        
-        return users;
+        var rowsAffected = await db.SaveChangesAsync(cancellationToken);
+
+        return rowsAffected > 0;
     }
 
-    public async Task<User?> GetByIdAsync(string id, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<Member>> GetAsync(CancellationToken cancellationToken)
     {
-        var user = await dbContext.Users.FirstOrDefaultAsync(
-            u => u.Id == id, 
-            cancellationToken);
+        var members = await db.Members
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
 
-        return user;
+        return members;
+    }
+
+    public async Task<Member?> GetByIdAsync(string id, CancellationToken cancellationToken)
+    {
+        var member = await db.Members
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Id == id, cancellationToken);
+
+        return member;
+    }
+
+    public async Task<IReadOnlyList<Photo>> GetPhotosAsync(string id, CancellationToken cancellationToken)
+    {
+        var photo = await db.Members
+            .AsNoTracking()
+            .Where(m => m.Id == id)
+            .SelectMany(m => m.Photos)
+            .ToListAsync(cancellationToken);
+
+        return photo;
+    }
+
+    public async Task UpdateAsync(Member member, CancellationToken cancellationToken)
+    {
+        db.Entry(member).State = EntityState.Modified;
+
+        await db.SaveChangesAsync(cancellationToken);
     }
 }

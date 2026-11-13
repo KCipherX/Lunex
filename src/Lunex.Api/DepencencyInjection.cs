@@ -12,7 +12,7 @@ namespace Lunex.Api;
 
 public static class DepencencyInjection
 {
-    public static IServiceCollection AddWebApi(this IServiceCollection services, 
+    public static IServiceCollection AddWebApi(this IServiceCollection services,
         IConfiguration configuration)
     {
         services.AddOpenApi()
@@ -23,8 +23,8 @@ public static class DepencencyInjection
 
         return services;
     }
-    
-    private static IServiceCollection AddCors(this IServiceCollection services, 
+
+    private static IServiceCollection AddCors(this IServiceCollection services,
         IConfiguration configuration)
     {
         var corsSettings = configuration.GetRequiredSection(CorsSettings.SectionName)
@@ -62,7 +62,7 @@ public static class DepencencyInjection
     }
 
     private static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
-    {        
+    {
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Section));
         services.ConfigureOptions<JwtBearerTokenValidationConfiguration>()

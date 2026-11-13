@@ -14,15 +14,15 @@ namespace Lunex.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, 
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services,
         IConfiguration configuration)
     {
         services.AddPersistence(configuration);
-        
+
         return services;
     }
 
-    private static IServiceCollection AddPersistence(this IServiceCollection services, 
+    private static IServiceCollection AddPersistence(this IServiceCollection services,
         IConfiguration configuration)
     {
         services.AddDbContext<ApplicationDbContext>(options => options

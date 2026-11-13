@@ -1,4 +1,6 @@
-﻿using Lunex.Domain.Enitities.Members;
+﻿using System.Text.Json.Serialization;
+
+using Lunex.Domain.Enitities.Members;
 
 namespace Lunex.Domain.Enitities.Photos;
 
@@ -11,5 +13,7 @@ public sealed class Photo
     /// <summary>
     /// navigational property
     /// </summary>
+    /// 
+    [JsonIgnore]
     public Member Member { get; set; } = null!;
 }

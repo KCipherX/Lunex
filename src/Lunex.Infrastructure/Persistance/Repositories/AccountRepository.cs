@@ -5,19 +5,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lunex.Infrastructure.Persistance.Repositories;
 
-public sealed class AccountRepository(ApplicationDbContext dbContext) : IAccountRepository
+public sealed class AccountRepository(ApplicationDbContext db) : IAccountRepository
 {
     public async Task<User?> RegisterAsync(User user, CancellationToken cancellationToken)
     {
-        await dbContext.Users.AddAsync(user, cancellationToken);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        await db.Users.AddAsync(user, cancellationToken);
+        await db.SaveChangesAsync(cancellationToken);
 
         return user;
     }
 
     public async Task<bool> EmailExistsAsync(string email, CancellationToken cancellationToken)
     {
-        var emailExists = await dbContext.Users
+        var emailExists = await db.Users
+            .AsNoTracking()
             .AnyAsync(user => user.Email.ToLower() == email.ToLower(), cancellationToken);
 
         return emailExists;
@@ -25,7 +26,10 @@ public sealed class AccountRepository(ApplicationDbContext dbContext) : IAccount
 
     public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        var user = await dbContext.Users.SingleOrDefaultAsync(x => x.Email == email, cancellationToken);
+        var user = await db.Users
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Email == email, cancellationToken);
+
         return user;
     }
 }

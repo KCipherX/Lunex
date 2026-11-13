@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 using Lunex.Domain.Enitities.Photos;
 using Lunex.Domain.Enitities.Users;
@@ -18,11 +19,12 @@ public sealed class Member
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime LastActiveAt { get; set; } = DateTime.UtcNow;
 
+    [JsonIgnore]
     public ICollection<Photo> Photos { get; set; } = [];
 
     /// <summary>
     /// navigational property
     /// </summary>
-    [ForeignKey(nameof(Id))]
+    [ForeignKey(nameof(Id)), JsonIgnore]
     public User User { get; set; } = null!;
 }
