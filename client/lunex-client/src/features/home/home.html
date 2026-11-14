@@ -1,32 +1,274 @@
-<div class="hero bg-base-200 min-h-screen">
-  @if (!registerMode()) {
-    <div class="hero-content text-center">
-      <div class="flex flex-col items-center">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="size-42 text-primary"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
-          />
+<!-- Hero Section -->
+<section class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-base-200 via-base-100 to-primary/10 px-4 overflow-hidden">
+  <!-- Background decoration -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary/10 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="relative z-10 w-full max-w-6xl mx-auto">
+    <!-- Header -->
+    <header class="flex items-center justify-between mb-16">
+      <a href="/" class="inline-flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-10 text-primary">
+          <path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
         </svg>
-        <h1 class="text-5xl font-bold">Find your match</h1>
-        <p class="py-6">Come on in! All you need is to sign up</p>
-        <div class="flex items-center gap-3">
-          <button (click)="showRegister(true)" class="btn btn-primary btn-lg">Register</button>
-          <button class="btn btn-info btn-lg">Learn more</button>
+        <span class="text-3xl font-bold text-base-content">Lunex</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6">
+        <a routerLink="/login" class="btn btn-ghost text-sm">Sign In</a>
+        <a routerLink="/register" class="btn btn-primary text-sm">Get Started</a>
+      </nav>
+    </header>
+
+    <!-- Hero Content -->
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div class="text-center lg:text-left">
+        <div class="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+          </span>
+          New: Video profiles now available!
+        </div>
+        
+        <h1 class="text-5xl lg:text-7xl font-bold text-base-content leading-tight mb-6">
+          Find Your Perfect
+          <br />
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Match</span>
+        </h1>
+        
+        <p class="text-lg lg:text-xl text-base-content/70 max-w-xl mb-8 leading-relaxed">
+          Join thousands of singles who found meaningful connections on Lunex. 
+          Our intelligent matching helps you meet people who truly get you.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-12">
+          <app-button
+            label="Create Free Account"
+            routerLink="/register"
+            variant="primary"
+            size="lg"
+            icon="user-plus"
+          />
+          <app-button
+            label="How It Works"
+            variant="outline"
+            size="lg"
+            icon="info"
+            (onClick)="scrollToFeatures()"
+          />
+        </div>
+
+        <!-- Trust indicators -->
+        <div class="flex flex-wrap items-center gap-6 text-sm text-base-content/50">
+          <div class="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            <span>Verified Profiles</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            <span>Secure Messaging</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            <span>24/7 Support</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Image/Illustration -->
+      <div class="relative hidden lg:block">
+        <div class="relative aspect-square max-w-lg mx-auto">
+          <!-- Floating cards -->
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64">
+            <app-card variant="glass" padding="md" class="shadow-2xl">
+              <div class="flex items-center gap-3">
+                <app-avatar src="/user.png" alt="User" size="lg" status="online" />
+                <div>
+                  <p class="font-medium text-base-content">Sarah M.</p>
+                  <p class="text-sm text-base-content/60">Online now</p>
+                </div>
+              </div>
+            </app-card>
+          </div>
+          
+          <div class="absolute top-1/4 right-0 w-72">
+            <app-card variant="glass" padding="md" class="shadow-2xl">
+              <div class="text-center">
+                <div class="text-3xl font-bold text-primary mb-1">98%</div>
+                <div class="text-sm text-base-content/70">Match Accuracy</div>
+              </div>
+            </app-card>
+          </div>
+          
+          <div class="absolute bottom-1/4 left-0 w-64">
+            <app-card variant="glass" padding="md" class="shadow-2xl">
+              <div class="flex items-center gap-3">
+                <div class="p-3 bg-primary/10 rounded-xl">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </div>
+                <div>
+                  <p class="font-medium text-base-content">New Message</p>
+                  <p class="text-sm text-base-content/60">From Alex</p>
+                </div>
+              </div>
+            </app-card>
+          </div>
+          
+          <div class="absolute bottom-0 right-1/2 -translate-x-1/2 w-72">
+            <app-card variant="glass" padding="md" class="shadow-2xl">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="font-medium text-base-content">Profile Views</p>
+                  <p class="text-2xl font-bold text-primary">1,234</p>
+                </div>
+                <div class="text-4xl font-bold text-primary/20">📈</div>
+              </div>
+            </app-card>
+          </div>
+
+          <!-- Center illustration -->
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="relative w-64 h-64">
+              <div class="absolute inset-0 border-4 border-primary/20 rounded-full animate-ping"></div>
+              <div class="absolute inset-4 border-4 border-secondary/20 rounded-full animate-ping" style="animation-delay: 1s;"></div>
+              <div class="absolute inset-8 border-4 border-accent/20 rounded-full animate-ping" style="animation-delay: 2s;"></div>
+              <div class="relative w-full h-full rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-primary/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  } @else {
-    <div class="w-full text-2xl text-center flex justify-center">
-      <app-register (cancelRegister)="showRegister($event)" class="w-full" />
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-20 bg-base-100 border-y border-base-200">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <ng-container *ngFor="let stat of stats; trackBy: trackByStatLabel">
+        <div class="text-center p-6">
+          <div class="text-4xl lg:text-5xl font-bold text-primary mb-2">{{ stat.value }}</div>
+          <div class="text-base-content/70">{{ stat.label }}</div>
+        </div>
+      </ng-container>
     </div>
-  }
-</div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-24 bg-base-200">
+  <div class="container mx-auto px-4">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <h2 class="text-3xl lg:text-4xl font-bold text-base-content mb-4">Everything you need to find your match</h2>
+      <p class="text-lg text-base-content/70">Powerful features designed to help you make meaningful connections</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <ng-container *ngFor="let feature of features; trackBy: trackByFeatureTitle">
+        <app-card variant="bordered" padding="lg" [hover]="true" class="h-full transition-all duration-300">
+          <div class="p-3 bg-primary/10 rounded-xl w-fit mb-6">
+            <app-icon [name]="feature.icon" size="lg" class="text-primary" />
+          </div>
+          <h3 class="text-xl font-semibold text-base-content mb-3">{{ feature.title }}</h3>
+          <p class="text-base-content/70">{{ feature.description }}</p>
+        </app-card>
+      </ng-container>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-24 bg-base-100">
+  <div class="container mx-auto px-4">
+    <app-card variant="brand" padding="xl" class="max-w-3xl mx-auto text-center">
+      <h2 class="text-3xl lg:text-4xl font-bold text-primary-content mb-4">Ready to find your match?</h2>
+      <p class="text-lg text-primary-content/90 mb-8">Join thousands of singles who found meaningful connections. It's free to get started!</p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <app-button
+          label="Create Free Account"
+          routerLink="/register"
+          variant="secondary"
+          size="lg"
+          icon="user-plus"
+        />
+        <app-button
+          label="Learn More"
+          variant="outline"
+          size="lg"
+          buttonClass="bg-transparent border-primary-content text-primary-content hover:bg-primary-content/10"
+          (onClick)="scrollToFeatures()"
+        />
+      </div>
+    </app-card>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-base-200 border-t border-base-300 py-12">
+  <div class="container mx-auto px-4">
+    <div class="grid md:grid-cols-4 gap-8 mb-8">
+      <div>
+        <a href="/" class="inline-flex items-center gap-3 mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8 text-primary">
+            <path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
+          </svg>
+          <span class="text-xl font-bold text-base-content">Lunex</span>
+        </a>
+        <p class="text-base-content/60 text-sm">Find meaningful connections with people who share your values.</p>
+      </div>
+      <div>
+        <h4 class="font-semibold text-base-content mb-4">Company</h4>
+        <ul class="space-y-2 text-sm text-base-content/60">
+          <li><a href="#" class="hover:text-primary transition-colors">About Us</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">Careers</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">Press</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">Blog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold text-base-content mb-4">Support</h4>
+        <ul class="space-y-2 text-sm text-base-content/60">
+          <li><a href="#" class="hover:text-primary transition-colors">Help Center</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">Safety Tips</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">Contact Us</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold text-base-content mb-4">Legal</h4>
+        <ul class="space-y-2 text-sm text-base-content/60">
+          <li><a href="#" class="hover:text-primary transition-colors">Privacy Policy</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">Terms of Service</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">Cookie Policy</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">Guidelines</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-base-300 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-base-content/50">&copy; 2024 Lunex. All rights reserved.</p>
+      <div class="flex items-center gap-6">
+        <a href="#" class="text-base-content/50 hover:text-primary transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-2.717 0-4.92 2.203-4.92 4.917 0 .39.045.765.127 1.124-4.087-.205-7.719-2.165-10.148-5.144-.423.729-.666 1.571-.666 2.475 0 1.71.87 3.213 2.188 4.096-.807-.026-1.566-.247-2.229-.616v.06c0 2.385 1.693 4.374 3.946 4.827-.413.111-.849.171-1.296.171-.314 0-.615-.03-.916-.086.631 1.953 2.445 3.377 4.604 3.417-1.687 1.319-3.809 2.105-6.102 2.105-.39 0-.776-.023-1.157-.067 2.189 1.398 4.768 2.212 7.557 2.212 9.054 0 13.999-7.496 13.999-13.986 0-.213-.005-.426-.015-.637.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+        </a>
+        <a href="#" class="text-base-content/50 hover:text-primary transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+        </a>
+        <a href="#" class="text-base-content/50 hover:text-primary transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+        </a>
+        <a href="#" class="text-base-content/50 hover:text-primary transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,40 @@
+:host {
+  display: block;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.absolute > app-card {
+  animation: float 6s ease-in-out infinite;
+}
+
+.absolute > app-card:nth-child(2) {
+  animation-delay: 1s;
+}
+
+.absolute > app-card:nth-child(3) {
+  animation-delay: 2s;
+}
+
+.absolute > app-card:nth-child(4) {
+  animation-delay: 3s;
+}
+
+@media (max-width: 1024px) {
+  .absolute > app-card {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .absolute > app-card {
+    animation: none;
+  }
+}

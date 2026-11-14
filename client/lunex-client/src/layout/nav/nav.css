@@ -1,0 +1,88 @@
+/* Nav styles */
+:host {
+  display: block;
+}
+
+.nav-header {
+  border-bottom: 1px solid rgb(238 228 233 / 72%);
+  background: rgb(255 255 255 / 84%);
+  backdrop-filter: blur(16px);
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.nav-header--scrolled {
+  background: rgb(255 255 255 / 94%);
+  box-shadow: 0 8px 26px rgb(75 37 58 / 7%);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.2s ease-out;
+}
+
+/* User menu dropdown */
+.user-menu > div {
+  animation: slideDown 0.15s ease-out;
+}
+
+/* Focus visible for accessibility */
+*:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--lunex-rose) 55%, transparent);
+  outline-offset: 2px;
+}
+
+/* Mobile menu */
+#mobile-menu {
+  animation: slideDown 0.2s ease-out;
+}
+
+/* Logo hover effect */
+a[routerLink="/"]:hover svg {
+  animation: pulse 1s ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Navigation link hover */
+a[routerLink]:hover {
+  transform: translateY(-1px);
+}
+
+/* Scrolled state */
+header {
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Active link */
+a.router-link-active {
+  position: relative;
+}
+
+a.router-link-active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--lunex-rose);
+  border-radius: 1px;
+}
+
+/* Avatar in nav */
+app-avatar {
+  flex-shrink: 0;
+}

@@ -1,64 +1,207 @@
-<header class="p-3 w-full fixed top-0 z-50 bg-linear-to-r from-primary to-black">
-  <div class="flex align-middle items-center px-10 mx-auto gap-6">
-    <a
-      class="flex items-center gap-3 max-h-16"
-      href="max-h-16 text-white border-r-white border-r-2 pr-6"
-      ><svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        class="size-6"
+<header 
+  class="fixed top-0 left-0 right-0 z-50 nav-header"
+  [class.nav-header--scrolled]="scrolled()"
+>
+  <nav class="container mx-auto px-4" aria-label="Main navigation">
+    <div class="flex items-center justify-between h-16 lg:h-18">
+      <!-- Logo -->
+      <a 
+        routerLink="/" 
+        class="flex items-center gap-3 text-xl font-bold text-base-content hover:opacity-80 transition-opacity"
+        aria-label="Lunex Home"
       >
-        <path
-          d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z"
-        />
-      </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8 text-primary">
+          <path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
+        </svg>
+        <span class="hidden sm:block">Lunex</span>
+      </a>
 
-      <h3 class="text-2xl font-semibold">Lunex</h3>
-    </a>
-    <nav class="flex gap-3 my-2 uppercase text-lg text-white">
-      <a>Matches</a>
-      <a>Lists</a>
-      <a>Messages</a>
-    </nav>
-    <div class="flex align-middle ml-auto gap-3">
-      @if (accountService.currentUser(); as user) {
-        <div class="dropdown dropdown-end">
-          <div
-            tabindex="0"
-            role="button"
-            class="flex items-center text-white text-xl gap-3 cursor-pointer"
-          >
-            <img src="/user.png" alt="user avatar" class="w-8 h-8 rounded-full" />
-            <span>{{ user.name }}</span>
+      <!-- Desktop Navigation -->
+      <div class="hidden lg:flex lg:items-center lg:gap-8">
+        <a 
+          routerLink="/members" 
+          routerLinkActive="text-primary"
+          class="text-base-content/70 hover:text-primary transition-colors font-medium"
+        >
+          Discover
+        </a>
+        <a 
+          routerLink="/lists" 
+          routerLinkActive="text-primary"
+          class="text-base-content/70 hover:text-primary transition-colors font-medium"
+        >
+          Lists
+        </a>
+        <a 
+          routerLink="/messages" 
+          routerLinkActive="text-primary"
+          class="text-base-content/70 hover:text-primary transition-colors font-medium"
+        >
+          Messages
+        </a>
+      </div>
+
+      <!-- Right Side Actions -->
+      <div class="flex items-center gap-3">
+        @if (isAuthenticated()) {
+          <!-- User Menu -->
+          <div class="relative user-menu">
+            <button
+              class="flex items-center gap-2 p-1 rounded-full hover:bg-base-200 transition-colors"
+              (click)="toggleUserMenu()"
+              aria-expanded="{{ userMenuOpen() }}"
+              aria-haspopup="true"
+              aria-label="User menu"
+            >
+              <app-avatar 
+                [src]="currentUser()?.imageUrl || ''" 
+                [alt]="currentUser()?.name || 'User'" 
+                [text]="getInitials(currentUser()?.name || '')" 
+                size="md" 
+                status="online"
+              />
+              <span class="hidden md:block font-medium text-base-content">{{ currentUser()?.name }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-base-content/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            @if (userMenuOpen()) {
+              <div class="absolute right-0 mt-2 w-48 bg-base-100 rounded-xl shadow-lg border border-base-200 py-2 animate-slide-down">
+                <div class="px-4 py-2 border-b border-base-200">
+                  <p class="font-medium text-base-content">{{ currentUser()?.name }}</p>
+                  <p class="text-sm text-base-content/60 truncate">{{ currentUser()?.email }}</p>
+                </div>
+                <a 
+                  routerLink="/members" 
+                  class="flex items-center gap-3 px-4 py-2 text-base-content/70 hover:text-primary hover:bg-base-200 transition-colors"
+                  (click)="closeMobileMenu()"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                  <span>My Profile</span>
+                </a>
+                <a 
+                  routerLink="/lists" 
+                  class="flex items-center gap-3 px-4 py-2 text-base-content/70 hover:text-primary hover:bg-base-200 transition-colors"
+                  (click)="closeMobileMenu()"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+                  <span>My Lists</span>
+                </a>
+                <a 
+                  routerLink="/messages" 
+                  class="flex items-center gap-3 px-4 py-2 text-base-content/70 hover:text-primary hover:bg-base-200 transition-colors"
+                  (click)="closeMobileMenu()"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                  <span>Messages</span>
+                </a>
+                <hr class="border-base-200 my-2" />
+                <button 
+                  (click)="logout()"
+                  class="flex items-center gap-3 w-full px-4 py-2 text-error hover:bg-base-200 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                  <span>Logout</span>
+                </button>
+              </div>
+            }
           </div>
-          <ul
-            tabindex="-1"
-            class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
-          >
-            <li><a>Edit profile</a></li>
-            <li><a (click)="logout()">Logout</a></li>
-          </ul>
-        </div>
-      } @else {
-        <form #loginForm="ngForm" (ngSubmit)="login()" class="flex items-center gap-3">
-          <input
-            [(ngModel)]="cred.email"
-            name="email"
-            type="text"
-            class="input"
-            placeholder="Email"
-          />
-          <input
-            [(ngModel)]="cred.password"
-            name="password"
-            type="password"
-            class="input"
-            placeholder="Password"
-          />
-          <button class="btn">Login</button>
-        </form>
-      }
+        } @else {
+          <!-- Auth Buttons -->
+          <div class="hidden sm:flex items-center gap-2">
+            <app-button 
+              label="Sign In" 
+              variant="ghost" 
+              routerLink="/login"
+              size="sm"
+            />
+            <app-button 
+              label="Get Started" 
+              variant="primary" 
+              routerLink="/register"
+              size="sm"
+            />
+          </div>
+        }
+
+        <!-- Mobile Menu Button -->
+        <button
+          class="lg:hidden p-2 rounded-lg text-base-content/70 hover:text-primary hover:bg-base-200 transition-colors"
+          (click)="toggleMobileMenu()"
+          aria-expanded="{{ mobileMenuOpen() }}"
+          aria-controls="mobile-menu"
+          aria-label="Toggle menu"
+        >
+          @if (mobileMenuOpen()) {
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+          }
+        </button>
+      </div>
     </div>
-  </div>
+
+    <!-- Mobile Menu -->
+    @if (mobileMenuOpen()) {
+      <div id="mobile-menu" class="lg:hidden py-4 border-t border-base-200 animate-slide-down">
+        <div class="flex flex-col gap-2">
+          <a 
+            routerLink="/members" 
+            class="px-4 py-3 text-base-content/70 hover:text-primary hover:bg-base-200 rounded-lg transition-colors font-medium"
+            (click)="closeMobileMenu()"
+          >
+            Discover
+          </a>
+          <a 
+            routerLink="/lists" 
+            class="px-4 py-3 text-base-content/70 hover:text-primary hover:bg-base-200 rounded-lg transition-colors font-medium"
+            (click)="closeMobileMenu()"
+          >
+            Lists
+          </a>
+          <a 
+            routerLink="/messages" 
+            class="px-4 py-3 text-base-content/70 hover:text-primary hover:bg-base-200 rounded-lg transition-colors font-medium"
+            (click)="closeMobileMenu()"
+          >
+            Messages
+          </a>
+          <hr class="border-base-200 my-2" />
+          @if (isAuthenticated()) {
+            <a 
+              routerLink="/members" 
+              class="px-4 py-3 text-base-content/70 hover:text-primary hover:bg-base-200 rounded-lg transition-colors font-medium"
+              (click)="closeMobileMenu()"
+            >
+              My Profile
+            </a>
+            <button 
+              (click)="logout()"
+              class="px-4 py-3 text-left text-error hover:bg-base-200 rounded-lg transition-colors font-medium"
+            >
+              Logout
+            </button>
+          } @else {
+            <app-button 
+              label="Sign In" 
+              variant="outline" 
+              routerLink="/login"
+              [fullWidth]="true"
+              class="mx-4"
+              (onClick)="closeMobileMenu()"
+            />
+            <app-button 
+              label="Get Started" 
+              variant="primary" 
+              routerLink="/register"
+              [fullWidth]="true"
+              class="mx-4"
+              (onClick)="closeMobileMenu()"
+            />
+          }
+        </div>
+      </div>
+    }
+  </nav>
 </header>

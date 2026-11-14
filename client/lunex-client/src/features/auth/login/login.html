@@ -1,0 +1,63 @@
+<app-auth-layout
+  eyebrow="MEANINGFUL CONNECTIONS"
+  headline="A little spark can change everything."
+  description="Meet people who share your values, your humor, and the way you see the world."
+>
+  <header class="auth-form-heading">
+    <p class="auth-form-eyebrow">WELCOME BACK</p>
+    <h2>Sign in</h2>
+    <p>Pick up right where the conversation left off.</p>
+  </header>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+    <app-input
+      class="auth-input"
+      label="Email address"
+      type="email"
+      name="email"
+      formControlName="email"
+      placeholder="you@example.com"
+      [error]="emailError"
+      autocomplete="email"
+    />
+
+    <app-input
+      class="auth-input"
+      label="Password"
+      [type]="showPassword() ? 'text' : 'password'"
+      name="password"
+      formControlName="password"
+      placeholder="Enter your password"
+      [error]="passwordError"
+      autocomplete="current-password"
+      [showPasswordToggle]="true"
+    />
+
+    <div class="auth-actions">
+      <label class="auth-check">
+        <input type="checkbox" formControlName="rememberMe" />
+        <span>Remember me</span>
+      </label>
+      <a routerLink="/forgot-password" class="auth-link">Forgot password?</a>
+    </div>
+
+    <app-button
+      class="auth-submit"
+      label="Sign in"
+      type="submit"
+      variant="primary"
+      size="lg"
+      [fullWidth]="true"
+      [loading]="loading()"
+    />
+
+    @if (loginForm.errors?.['serverError']) {
+      <p class="auth-server-error" role="alert">{{ loginForm.errors?.['serverError'] }}</p>
+    }
+  </form>
+
+  <p class="auth-switch">
+    New to Lunex?
+    <a routerLink="/register" class="auth-link">Create an account</a>
+  </p>
+</app-auth-layout>

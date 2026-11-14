@@ -1,0 +1,54 @@
+<div class="auth-page">
+  <section class="auth-shell">
+    <aside class="auth-story">
+      <a class="auth-brand" routerLink="/" aria-label="Lunex home">
+        <span class="auth-brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 20.2S3.5 15.4 3.5 9.5a4.5 4.5 0 0 1 8.5-2.1 4.5 4.5 0 0 1 8.5 2.1c0 5.9-8.5 10.7-8.5 10.7Z" fill="currentColor" />
+          </svg>
+        </span>
+        <span>Lunex</span>
+      </a>
+
+      <div class="auth-story__copy">
+        <p class="auth-story__eyebrow">{{ eyebrow() }}</p>
+        <h1>{{ headline() }}</h1>
+        <p class="auth-story__description">{{ description() }}</p>
+      </div>
+
+      <div class="auth-art" aria-hidden="true">
+        <div class="auth-art__orbit auth-art__orbit--outer"></div>
+        <div class="auth-art__orbit auth-art__orbit--inner"></div>
+        <div class="auth-art__heart">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 20.2S3.5 15.4 3.5 9.5a4.5 4.5 0 0 1 8.5-2.1 4.5 4.5 0 0 1 8.5 2.1c0 5.9-8.5 10.7-8.5 10.7Z" fill="currentColor" />
+          </svg>
+        </div>
+        <div class="auth-art__card auth-art__card--left">
+          <span class="auth-art__spark">✦</span>
+          <span><strong>Start with a hello</strong><small>Let the conversation unfold.</small></span>
+        </div>
+        <div class="auth-art__card auth-art__card--right">
+          <span class="auth-art__dot"></span>
+          <span><strong>Good energy</strong><small>Looks good on you.</small></span>
+        </div>
+      </div>
+
+      <p class="auth-story__footer">Real connection. Your own pace.</p>
+    </aside>
+
+    <section class="auth-main" aria-label="Account form">
+      <div class="auth-main__inner">
+        <a class="auth-mobile-brand" routerLink="/" aria-label="Lunex home">
+          <span class="auth-brand__mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 20.2S3.5 15.4 3.5 9.5a4.5 4.5 0 0 1 8.5-2.1 4.5 4.5 0 0 1 8.5 2.1c0 5.9-8.5 10.7-8.5 10.7Z" fill="currentColor" />
+            </svg>
+          </span>
+          <span>Lunex</span>
+        </a>
+        <ng-content></ng-content>
+      </div>
+    </section>
+  </section>
+</div>

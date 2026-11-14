@@ -1,44 +1,24 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { lastValueFrom } from 'rxjs';
-import { Nav } from '../layout/nav/nav';
-import { AccountService } from '../core/services/account-service';
-import { User } from '../types/User';
+import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
+import { NavComponent } from '../layout/nav/nav';
+import { ToastContainerComponent } from '../shared/components/toast/toast-container.component';
 
 @Component({
   selector: 'app-root',
-  imports: [Nav, RouterOutlet],
+  standalone: true,
+  imports: [NavComponent, RouterOutlet, ToastContainerComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App implements OnInit {
-  private http = inject(HttpClient);
-  protected router = inject(Router);
-  private accountService = inject(AccountService);
+export class AppComponent {
+  private router = inject(Router);
 
-  private readonly baseUrl = 'https://localhost:5001';
-
-  protected readonly title = signal('Lunex');
-  protected members = signal<User[]>([]);
-
-  async ngOnInit() {
-    this.members.set((await this.getMembers()) ?? []);
-    this.setCurrentUser();
+  constructor() {
+    // App initialization
   }
 
-  setCurrentUser() {
-    const user = localStorage.getItem('user');
-    if (!user) return;
-    this.accountService.currentUser.set(JSON.parse(user));
-  }
-
-  async getMembers() {
-    try {
-      return await lastValueFrom(this.http.get<User[]>(`${this.baseUrl}/api/members`));
-    } catch (error) {
-      console.error('Error fetching members:', error);
-      return null;
-    }
+  get isStandaloneRoute(): boolean {
+    const path = this.router.url.split(/[?#]/)[0];
+    return ['/', '/login', '/register', '/forgot-password'].includes(path);
   }
 }

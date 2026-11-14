@@ -1,9 +1,7 @@
-<app-nav />
-
-<div
-  [class.mt-24]="router.url === '/'"
-  [class.container]="router.url !== '/'"
-  [class.mx-auto]="router.url !== '/'"
->
+@if (!isStandaloneRoute) {
+  <app-nav />
+}
+<main [class]="isStandaloneRoute ? 'min-h-screen' : 'min-h-screen pt-16 lg:pt-18'">
   <router-outlet />
-</div>
+</main>
+<app-toast-container />

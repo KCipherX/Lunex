@@ -3,7 +3,7 @@
   <div class="card-body w-full">
     <form #registerForm="ngForm" class="flex flex-col gap-4 w-full" (ngSubmit)="register()">
       <input
-        type="name"
+        type="text"
         name="name"
         placeholder="Name"
         class="input input-bordered w-full"
@@ -26,6 +26,47 @@
         [(ngModel)]="creds.password"
         required
       />
+      <select
+        name="gender"
+        class="select select-bordered w-full"
+        [(ngModel)]="creds.gender"
+        required
+      >
+        <option value="" disabled selected>Select Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+      <input
+        type="text"
+        name="city"
+        placeholder="City"
+        class="input input-bordered w-full"
+        [(ngModel)]="creds.city"
+        required
+      />
+      <input
+        type="text"
+        name="country"
+        placeholder="Country"
+        class="input input-bordered w-full"
+        [(ngModel)]="creds.country"
+        required
+      />
+      <input
+        type="date"
+        name="dateOfBirth"
+        class="input input-bordered w-full"
+        [(ngModel)]="creds.dateOfBirth"
+        required
+      />
+      <textarea
+        name="description"
+        placeholder="About yourself (optional)"
+        class="textarea textarea-bordered w-full"
+        [(ngModel)]="creds.description"
+        rows="3"
+      ></textarea>
       <div class="flex items-center justify-end gap-3">
         <button type="button" class="btn" (click)="cancel()">Cancel</button>
         <button type="submit" class="btn btn-primary">Register</button>

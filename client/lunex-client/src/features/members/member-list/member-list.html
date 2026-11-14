@@ -1,1 +1,169 @@
-<p>member-list works!</p>
+<div class="page-container">
+  <app-page-header
+    eyebrow="DISCOVER"
+    title="Discover members"
+    description="Find people who share your interests"
+  >
+    <div page-actions>
+      <select class="select select-bordered w-auto" (change)="onPageSizeChange($event)">
+        <option [value]="12" [selected]="pageSize === 12">12 per page</option>
+        <option [value]="24" [selected]="pageSize === 24">24 per page</option>
+        <option [value]="48" [selected]="pageSize === 48">48 per page</option>
+      </select>
+    </div>
+  </app-page-header>
+
+  @if (error()) {
+    <div class="alert alert-error mb-6" role="alert">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      <span>{{ error() }}</span>
+      <app-button label="Retry" variant="outline" size="sm" (onClick)="loadMembers()" class="ml-4" />
+    </div>
+  }
+
+  @if (loading() && members().length === 0) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      @for (item of [1,2,3,4,5,6,7,8]; track item) {
+        <app-card variant="bordered" padding="md" class="animate-pulse">
+          <div class="aspect-square bg-base-200 rounded-xl mb-4"></div>
+          <div class="h-4 bg-base-200 rounded w-3/4 mb-2"></div>
+          <div class="h-3 bg-base-200 rounded w-1/2"></div>
+        </app-card>
+      }
+    </div>
+  } @else {
+    <!-- Members Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+      @for (member of members(); track member.id) {
+        <article class="group">
+          <a [routerLink]="['/members', member.id]" class="block">
+            <app-card variant="shadow" padding="none" [hover]="true" class="h-full overflow-hidden">
+              <!-- Member Image -->
+              <div class="relative aspect-[4/3] overflow-hidden">
+                <img
+                  [src]="member.imageUrl || '/user.png'"
+                  [alt]="member.name"
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+                @if (member.photos && member.photos.length > 1) {
+                  <div class="absolute top-3 right-3">
+                    <span class="badge badge-primary badge-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      {{ member.photos.length }}
+                    </span>
+                  </div>
+                }
+                @if (isCurrentUser()(member)) {
+                  <div class="absolute top-3 left-3">
+                    <span class="badge badge-outline badge-primary">You</span>
+                  </div>
+                }
+              </div>
+
+              <!-- Member Info -->
+              <div class="p-4">
+                <div class="flex items-start justify-between gap-2 mb-2">
+                  <h3 class="font-semibold text-base-content text-lg truncate">{{ member.name }}</h3>
+                  <span class="badge badge-ghost badge-sm">{{ member.gender }}</span>
+                </div>
+                
+                <div class="flex items-center gap-1 text-sm text-base-content/60 mb-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /></svg>
+                  <span class="truncate">{{ member.city }}, {{ member.country }}</span>
+                </div>
+
+                <div class="flex items-center gap-1 text-sm text-base-content/60 mb-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <span>{{ calculateAge(member.dateOfBirth) }} years old</span>
+                </div>
+
+                @if (member.description) {
+                  <p class="text-sm text-base-content/70 line-clamp-2 mb-3">{{ member.description }}</p>
+                }
+
+                <!-- Quick Actions for current user -->
+                @if (isCurrentUser()(member)) {
+                  <div class="pt-3 border-t border-base-200">
+                    <app-button
+                      label="Edit Profile"
+                      variant="outline"
+                      size="sm"
+                      [fullWidth]="true"
+                      routerLink="/members/edit"
+                      icon="edit"
+                    />
+                  </div>
+                }
+              </div>
+            </app-card>
+          </a>
+        </article>
+      } @empty {
+        <app-empty-state
+          class="col-span-full"
+          title="No members found"
+          description="Be the first to join and discover new connections!"
+        >
+          <div empty-icon>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-base-content/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <div empty-actions>
+            @if (!currentUser()) {
+              <app-button label="Create Account" variant="primary" routerLink="/register" />
+            }
+          </div>
+        </app-empty-state>
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (pagination(); as paginated) {
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-sm text-base-content/60">
+          Showing {{ (currentPage() - 1) * pageSize + 1 }} to {{ Math.min(currentPage() * pageSize, paginated.totalCount) }} of {{ paginated.totalCount }} members
+        </p>
+
+        <nav class="flex items-center gap-1" aria-label="Pagination">
+          <app-button
+            label="Previous"
+            variant="outline"
+            size="sm"
+            icon="chevron-left"
+            [disabled]="currentPage() === 1"
+            (onClick)="onPageChange(currentPage() - 1)"
+          />
+
+          @for (page of getPageNumbers(); track page) {
+            @if (page === -1) {
+              <span class="px-3 text-base-content/40">...</span>
+            } @else {
+              <button
+                class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
+                [class]="page === currentPage() 
+                  ? 'bg-primary text-primary-content' 
+                  : 'text-base-content/70 hover:bg-base-200'"
+                (click)="onPageChange(page)"
+                [attr.aria-current]="page === currentPage() ? 'page' : null"
+              >
+                {{ page }}
+              </button>
+            }
+          }
+
+          <app-button
+            label="Next"
+            variant="outline"
+            size="sm"
+            icon="chevron-right"
+            [disabled]="currentPage() === paginated.totalPages"
+            (onClick)="onPageChange(currentPage() + 1)"
+            iconPosition="right"
+          />
+        </nav>
+      </div>
+    }
+  }
+</div>
