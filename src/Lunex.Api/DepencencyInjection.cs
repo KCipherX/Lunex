@@ -15,13 +15,27 @@ public static class DepencencyInjection
     public static IServiceCollection AddWebApi(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddOpenApi()
+        services
+            .AddApiDocumentation()
             .AddCors(configuration)
             .AddControllersAndItsConfigurations()
             .AddExceptionHandlers()
             .AddAuthentication(configuration);
 
         return services;
+    }
+
+    private static IServiceCollection AddApiDocumentation(this IServiceCollection services)
+    {
+        return services
+            .AddOpenApi(options => options
+            .AddDocumentTransformer((document, context, cancellationToken) =>
+            {
+                document.Info.Title = "Lunex API";
+                document.Info.Version = "v1";
+                document.Info.Description = "Lunex API for member management and authentication";
+                return Task.CompletedTask;
+            }));
     }
 
     private static IServiceCollection AddCors(this IServiceCollection services,

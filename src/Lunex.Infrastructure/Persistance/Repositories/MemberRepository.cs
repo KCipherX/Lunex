@@ -86,11 +86,11 @@ public sealed class MemberRepository(ApplicationDbContext db) : IMemberRepositor
 
     public async Task AddPhotoAsync(string memberId, Photo photo, CancellationToken cancellationToken)
     {
-        var member = await db.Members.FirstOrDefaultAsync(m => m.Id == memberId, cancellationToken) 
+        var member = await db.Members.FirstOrDefaultAsync(m => m.Id == memberId, cancellationToken)
             ?? throw new InvalidOperationException($"Member with id {memberId} not found");
-        
+
         member.Photos.Add(photo);
-        
+
         await db.SaveChangesAsync(cancellationToken);
     }
 

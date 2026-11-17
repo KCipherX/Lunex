@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Lunex.Application.Common.Services.Implementations;
 
-public sealed class JwtBearerTokenValidationConfiguration(IOptions<JwtSettings> jwtSettings) 
+public sealed class JwtBearerTokenValidationConfiguration(IOptions<JwtSettings> jwtSettings)
     : IConfigureNamedOptions<JwtBearerOptions>
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;

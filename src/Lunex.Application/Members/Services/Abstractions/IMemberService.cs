@@ -1,5 +1,4 @@
 ﻿using Lunex.Application.Common.Pagination;
-using Lunex.Contracts.Members.Requests;
 using Lunex.Contracts.Members.Responses;
 
 namespace Lunex.Application.Members.Services.Abstractions;
