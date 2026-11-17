@@ -6,7 +6,7 @@ namespace Lunex.Application.Members.Services.Abstractions;
 
 public interface IMemberService
 {
-    Task<PaginatedResult<MemberResponse>> GetAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
+    Task<PaginatedResult<MemberResponse>> GetAsync(MemberParams memberParams, CancellationToken cancellationToken);
     Task<MemberResponse?> GetByIdAsync(string id, CancellationToken cancellationToken);
     Task<IReadOnlyList<PhotoResponse>> GetPhotosAsync(string id, CancellationToken cancellationToken);
     Task<PhotoResponse> UploadPhotoAsync(string memberId, Stream fileStream, string fileName, CancellationToken cancellationToken);

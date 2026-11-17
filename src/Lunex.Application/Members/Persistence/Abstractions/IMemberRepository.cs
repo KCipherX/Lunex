@@ -6,7 +6,7 @@ namespace Lunex.Application.Members.Persistence.Abstractions;
 
 public interface IMemberRepository
 {
-    Task<PaginatedResult<Member>> GetAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
+    Task<PaginatedResult<Member>> GetAsync(MemberParams memberParams, CancellationToken cancellationToken);
     Task<Member?> GetByIdAsync(string id, CancellationToken cancellationToken);
     Task<IReadOnlyList<Photo>> GetPhotosAsync(string id, CancellationToken cancellationToken);
     Task UpdateAsync(Member member, CancellationToken cancellationToken);

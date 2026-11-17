@@ -1,6 +1,6 @@
 namespace Lunex.Application.Common.Pagination;
 
-public sealed class PaginationParams
+public class PaginationParams
 {
     private const int MaxPageSize = 50;
     private int _pageSize = 10;
@@ -12,4 +12,10 @@ public sealed class PaginationParams
         get => _pageSize;
         set => _pageSize = value > MaxPageSize ? MaxPageSize : (value < 1 ? 10 : value);
     }
+}
+
+public sealed class MemberParams : PaginationParams
+{
+    public string? Gender { get; set; }
+    public string? CurrentMemberId { get; set; }
 }

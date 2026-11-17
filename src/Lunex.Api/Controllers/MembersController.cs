@@ -11,13 +11,10 @@ public sealed class MembersController(IMemberService _memberService) : ApiContro
 {
     [HttpGet]
     public async Task<IActionResult> Get(
-        [FromQuery] PaginationParams paginationParams,
+        [FromQuery] MemberParams memberParams,
         CancellationToken cancellationToken = default)
     {
-        var paginatedMembers = await _memberService.GetAsync(
-            paginationParams.PageNumber,
-            paginationParams.PageSize,
-            cancellationToken);
+        var paginatedMembers = await _memberService.GetAsync(memberParams, cancellationToken);
 
         return Ok(paginatedMembers);
     }

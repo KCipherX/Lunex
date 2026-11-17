@@ -16,13 +16,28 @@ public sealed class MemberRepository(ApplicationDbContext db) : IMemberRepositor
         return rowsAffected > 0;
     }
 
-    public async Task<PaginatedResult<Member>> GetAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<Member>> GetAsync(MemberParams memberParams, CancellationToken cancellationToken)
     {
+        var pageNumber = memberParams.PageNumber;
+        var pageSize = memberParams.PageSize;
+
         if (pageNumber < 1) pageNumber = 1;
         if (pageSize < 1) pageSize = 10;
         if (pageSize > 100) pageSize = 100;
 
-        var query = db.Members.AsNoTracking().OrderBy(m => m.Name);
+        var query = db.Members.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(memberParams.Gender))
+        {
+            query = query.Where(m => m.Gender == memberParams.Gender);
+        }
+
+        if (!string.IsNullOrWhiteSpace(memberParams.CurrentMemberId))
+        {
+            query = query.Where(m => m.Id != memberParams.CurrentMemberId);
+        }
+
+        query = query.OrderBy(m => m.Name);
         var count = await query.CountAsync(cancellationToken);
         var items = await query
             .Skip((pageNumber - 1) * pageSize)
@@ -71,13 +86,11 @@ public sealed class MemberRepository(ApplicationDbContext db) : IMemberRepositor
 
     public async Task AddPhotoAsync(string memberId, Photo photo, CancellationToken cancellationToken)
     {
-        var member = await db.Members.FirstOrDefaultAsync(m => m.Id == memberId, cancellationToken);
-        if (member is null)
-        {
-            throw new InvalidOperationException($"Member with id {memberId} not found");
-        }
-
+        var member = await db.Members.FirstOrDefaultAsync(m => m.Id == memberId, cancellationToken) 
+            ?? throw new InvalidOperationException($"Member with id {memberId} not found");
+        
         member.Photos.Add(photo);
+        
         await db.SaveChangesAsync(cancellationToken);
     }
 

@@ -28,7 +28,8 @@ public static class DependencyInjection
     private static IServiceCollection AddPersistence(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddDbContext<ApplicationDbContext>(options => options
+        services
+            .AddDbContext<ApplicationDbContext>(options => options
             .UseNpgsql(configuration.GetConnectionString("Database"), npgsqlOptions => npgsqlOptions
             .MigrationsHistoryTable(HistoryRepository.DefaultTableName, Constants.Schemas.Application))
             .UseSnakeCaseNamingConvention());

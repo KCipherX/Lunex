@@ -11,14 +11,14 @@ namespace Lunex.Application.Members.Services.Implementations;
 
 public sealed class MemberService(IMemberRepository memberRepository, IPhotoService photoService) : IMemberService
 {
-    public async Task<PaginatedResult<MemberResponse>> GetAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<MemberResponse>> GetAsync(MemberParams memberParams, CancellationToken cancellationToken)
     {
-        var paginatedMembers = await memberRepository.GetAsync(pageNumber, pageSize, cancellationToken);
+        var paginatedMembers = await memberRepository.GetAsync(memberParams, cancellationToken);
 
         return new PaginatedResult<MemberResponse>
         {
             Metadata = paginatedMembers.Metadata,
-            Items = paginatedMembers.Items.Select(m => m.ToResponse()).ToList()
+            Items = [.. paginatedMembers.Items.Select(m => m.ToResponse())]
         };
     }
 
