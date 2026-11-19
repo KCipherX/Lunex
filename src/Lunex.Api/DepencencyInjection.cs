@@ -1,12 +1,14 @@
 ﻿using System.Text.Json.Serialization;
 
 using Lunex.Api.Exceptions;
+using Lunex.Api.Filters;
 using Lunex.Application.Common.Configurations;
 using Lunex.Application.Common.Services.Abstractions;
 using Lunex.Application.Common.Services.Implementations;
 using Lunex.Domain.Settings;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Lunex.Api;
 
@@ -20,7 +22,8 @@ public static class DepencencyInjection
             .AddCors(configuration)
             .AddControllersAndItsConfigurations()
             .AddExceptionHandlers()
-            .AddAuthentication(configuration);
+            .AddAuthentication(configuration)
+            .AddFilters();
 
         return services;
     }
@@ -82,6 +85,15 @@ public static class DepencencyInjection
         services.ConfigureOptions<JwtBearerTokenValidationConfiguration>()
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer();
+
+        return services;
+    }
+
+    private static IServiceCollection AddFilters(this IServiceCollection services)
+    {
+        services.AddScoped<LogUserActivity>();
+        services.Configure<MvcOptions>(options => options.Filters
+            .AddService<LogUserActivity>());
 
         return services;
     }

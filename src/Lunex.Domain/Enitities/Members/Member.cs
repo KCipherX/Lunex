@@ -16,8 +16,8 @@ public sealed class Member
     public string Description { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime LastActiveAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; }
+    public DateTime LastActiveAt { get; set; }
 
     [JsonIgnore]
     public ICollection<Photo> Photos { get; set; } = [];

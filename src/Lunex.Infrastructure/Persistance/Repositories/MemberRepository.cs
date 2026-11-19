@@ -66,6 +66,12 @@ public sealed class MemberRepository(ApplicationDbContext db) : IMemberRepositor
         return member;
     }
 
+    public async Task<Member?> GetByIdForUpdateAsync(string id, CancellationToken cancellationToken)
+    {
+        return await db.Members
+            .FirstOrDefaultAsync(m => m.Id == id, cancellationToken);
+    }
+
     public async Task<IReadOnlyList<Photo>> GetPhotosAsync(string id, CancellationToken cancellationToken)
     {
         var photo = await db.Members

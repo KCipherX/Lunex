@@ -17,10 +17,11 @@ public static class AccountExtensions
         string.Empty,
         jwtTokenGenerator.GenerateToken(user));
 
-    public static User FromDto(this RegisterUserRequest request, HMACSHA512 hmac = null!)
+    public static User FromDto(this RegisterUserRequest request, IDateTimeProvider dateTimeProvider, HMACSHA512 hmac = null!)
     {
         hmac ??= new();
         var userId = Guid.NewGuid().ToString();
+        var now = dateTimeProvider.UtcNow;
         var user = new User
         {
             Id = userId,
@@ -37,8 +38,8 @@ public static class AccountExtensions
                 Country = request.Country,
                 DateOfBirth = request.DateOfBirth,
                 Description = request.Description ?? string.Empty,
-                CreatedAt = DateTime.UtcNow,
-                LastActiveAt = DateTime.UtcNow,
+                CreatedAt = now,
+                LastActiveAt = now,
             }
         };
 

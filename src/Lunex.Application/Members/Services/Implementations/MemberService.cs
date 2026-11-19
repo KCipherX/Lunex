@@ -9,7 +9,7 @@ using Lunex.Domain.Enitities.Photos;
 
 namespace Lunex.Application.Members.Services.Implementations;
 
-public sealed class MemberService(IMemberRepository memberRepository, IPhotoService photoService) : IMemberService
+public sealed class MemberService(IMemberRepository memberRepository, IPhotoService photoService, IDateTimeProvider dateTimeProvider) : IMemberService
 {
     public async Task<PaginatedResult<MemberResponse>> GetAsync(MemberParams memberParams, CancellationToken cancellationToken)
     {
@@ -97,5 +97,15 @@ public sealed class MemberService(IMemberRepository memberRepository, IPhotoServ
     public async Task<bool> SetMainPhotoAsync(string memberId, string photoId, CancellationToken cancellationToken)
     {
         return await memberRepository.SetMainPhotoAsync(memberId, photoId, cancellationToken);
+    }
+
+    public async Task UpdateLastActiveAsync(string memberId, CancellationToken cancellationToken)
+    {
+        var member = await memberRepository.GetByIdForUpdateAsync(memberId, cancellationToken);
+        if (member is not null)
+        {
+            member.LastActiveAt = dateTimeProvider.UtcNow;
+            await memberRepository.CommitAsync(cancellationToken);
+        }
     }
 }

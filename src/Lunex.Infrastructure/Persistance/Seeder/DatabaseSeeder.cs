@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
+using Lunex.Application.Common.Services.Abstractions;
 using Lunex.Domain.Enitities.Members;
 using Lunex.Domain.Enitities.Photos;
 using Lunex.Domain.Enitities.Users;
@@ -17,11 +18,12 @@ public static class DatabaseSeeder
     {
         using var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var dateTimeProvider = scope.ServiceProvider.GetRequiredService<IDateTimeProvider>();
 
         logger.LogInformation("Starting database seeding...");
 
         await SeedUsersAsync(dbContext, logger);
-        await SeedMembersAsync(dbContext, logger);
+        await SeedMembersAsync(dbContext, logger, dateTimeProvider);
         await SeedPhotosAsync(dbContext, logger);
 
         logger.LogInformation("Database seeding completed.");
@@ -50,7 +52,7 @@ public static class DatabaseSeeder
         logger.LogInformation("Seeded {Count} users.", users.Count);
     }
 
-    private static async Task SeedMembersAsync(ApplicationDbContext dbContext, ILogger logger)
+    private static async Task SeedMembersAsync(ApplicationDbContext dbContext, ILogger logger, IDateTimeProvider dateTimeProvider)
     {
         if (await dbContext.Members.AnyAsync())
         {
@@ -65,13 +67,14 @@ public static class DatabaseSeeder
             return;
         }
 
+        var now = dateTimeProvider.UtcNow;
         var members = new List<Member>
         {
-            CreateMember(users[0].Id, "Admin User", "Male", "System administrator", "New York", "USA", new DateOnly(1990, 1, 15)),
-            CreateMember(users[1].Id, "John Doe", "Male", "Software developer passionate about clean code", "San Francisco", "USA", new DateOnly(1992, 5, 20)),
-            CreateMember(users[2].Id, "Jane Smith", "Female", "UX designer who loves creating beautiful interfaces", "London", "UK", new DateOnly(1993, 8, 10)),
-            CreateMember(users[3].Id, "Bob Wilson", "Male", "Full-stack developer with 5+ years experience", "Toronto", "Canada", new DateOnly(1991, 11, 3)),
-            CreateMember(users[4].Id, "Alice Brown", "Female", "Data scientist and ML enthusiast", "Sydney", "Australia", new DateOnly(1994, 3, 25)),
+            CreateMember(users[0].Id, "Admin User", "Male", "System administrator", "New York", "USA", new DateOnly(1990, 1, 15), now),
+            CreateMember(users[1].Id, "John Doe", "Male", "Software developer passionate about clean code", "San Francisco", "USA", new DateOnly(1992, 5, 20), now),
+            CreateMember(users[2].Id, "Jane Smith", "Female", "UX designer who loves creating beautiful interfaces", "London", "UK", new DateOnly(1993, 8, 10), now),
+            CreateMember(users[3].Id, "Bob Wilson", "Male", "Full-stack developer with 5+ years experience", "Toronto", "Canada", new DateOnly(1991, 11, 3), now),
+            CreateMember(users[4].Id, "Alice Brown", "Female", "Data scientist and ML enthusiast", "Sydney", "Australia", new DateOnly(1994, 3, 25), now),
         };
 
         await dbContext.Members.AddRangeAsync(members);
@@ -124,7 +127,7 @@ public static class DatabaseSeeder
         };
     }
 
-    private static Member CreateMember(string userId, string name, string gender, string description, string city, string country, DateOnly dateOfBirth)
+    private static Member CreateMember(string userId, string name, string gender, string description, string city, string country, DateOnly dateOfBirth, DateTime now)
     {
         return new Member
         {
@@ -135,8 +138,8 @@ public static class DatabaseSeeder
             City = city,
             Country = country,
             DateOfBirth = dateOfBirth,
-            CreatedAt = DateTime.UtcNow,
-            LastActiveAt = DateTime.UtcNow,
+            CreatedAt = now,
+            LastActiveAt = now,
             ImageUrl = $"https://api.dicebear.com/7.x/avataaars/svg?seed={name.ToLower().Replace(" ", "")}"
         };
     }

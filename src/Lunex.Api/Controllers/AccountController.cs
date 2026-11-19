@@ -20,7 +20,7 @@ namespace Lunex.Api.Controllers;
 [AllowAnonymous]
 [ApiController]
 [Produces("application/json")]
-public sealed class AccountController(IAccountService accountService, IJwtTokenGenerator jwtTokenGenerator) : ApiController
+public sealed class AccountController(IAccountService accountService, IJwtTokenGenerator jwtTokenGenerator, IDateTimeProvider dateTimeProvider) : ApiController
 {
     /// <summary>
     /// Registers a new user account.
@@ -35,7 +35,7 @@ public sealed class AccountController(IAccountService accountService, IJwtTokenG
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] RegisterUserRequest request, CancellationToken cancellationToken)
     {
-        var user = request.FromDto();
+        var user = request.FromDto(dateTimeProvider);
 
         var emailExists = await accountService.EmailExistsAsync(
             user.Email,

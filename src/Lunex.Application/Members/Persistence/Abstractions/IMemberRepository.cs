@@ -14,4 +14,5 @@ public interface IMemberRepository
     Task AddPhotoAsync(string memberId, Photo photo, CancellationToken cancellationToken);
     Task<bool> RemovePhotoAsync(string memberId, string photoId, CancellationToken cancellationToken);
     Task<bool> SetMainPhotoAsync(string memberId, string photoId, CancellationToken cancellationToken);
+    Task<Member?> GetByIdForUpdateAsync(string id, CancellationToken cancellationToken);
 }

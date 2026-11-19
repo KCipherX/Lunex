@@ -11,4 +11,5 @@ public interface IMemberService
     Task<PhotoResponse> UploadPhotoAsync(string memberId, Stream fileStream, string fileName, CancellationToken cancellationToken);
     Task<bool> DeletePhotoAsync(string memberId, string photoId, CancellationToken cancellationToken);
     Task<bool> SetMainPhotoAsync(string memberId, string photoId, CancellationToken cancellationToken);
+    Task UpdateLastActiveAsync(string memberId, CancellationToken cancellationToken);
 }
