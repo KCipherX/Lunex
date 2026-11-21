@@ -1,0 +1,286 @@
+@baseUrl = http://localhost:5000
+@token =
+
+# ============================================
+# Lunex API - Complete HTTP Test Suite
+# ============================================
+# Usage: Open this file in VS Code with REST Client extension
+# or use `dotnet tool install -g dotnet-httprepl` and run `httprepl {{baseUrl}}`
+# ============================================
+
+# ============================================
+# AUTHENTICATION ENDPOINTS
+# ============================================
+
+### Register a new user (Public)
+# @name register
+POST {{baseUrl}}/api/account/register
+Content-Type: application/json
+
+{
+  "email": "jane.smith@example.com",
+  "password": "SecurePassword123",
+  "name": "Jane Smith"
+}
+
+### Register another user
+# @name register2
+POST {{baseUrl}}/api/account/register
+Content-Type: application/json
+
+{
+  "email": "bob.wilson@example.com",
+  "password": "AnotherPassword456",
+  "name": "Bob Wilson"
+}
+
+### Login user (Public)
+# @name login
+POST {{baseUrl}}/api/account/login
+Content-Type: application/json
+
+{
+  "email": "jane.smith@example.com",
+  "password": "SecurePassword123"
+}
+
+### Extract token from login response
+@token = {{login.response.body.$.token}}
+
+### Login second user
+# @name login2
+POST {{baseUrl}}/api/account/login
+Content-Type: application/json
+
+{
+  "email": "bob.wilson@example.com",
+  "password": "AnotherPassword456"
+}
+
+@token2 = {{login2.response.body.$.token}}
+
+# ============================================
+# MEMBER PROFILE ENDPOINTS (Require Auth)
+# ============================================
+
+### Get all members (paginated)
+GET {{baseUrl}}/api/members?pageNumber=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### Get members with gender filter
+GET {{baseUrl}}/api/members?pageNumber=1&pageSize=10&gender=Female
+Authorization: Bearer {{token}}
+
+### Get members excluding current user
+GET {{baseUrl}}/api/members?pageNumber=1&pageSize=10&currentMemberId={{getMyProfile.response.body.$.id}}
+Authorization: Bearer {{token}}
+
+### Get member by ID
+GET {{baseUrl}}/api/members/{{createProfile.response.body.$.id}}
+Authorization: Bearer {{token}}
+
+### Get current user's member profile
+# @name getMyProfile
+GET {{baseUrl}}/api/members/me
+Authorization: Bearer {{token}}
+
+### Create member profile for authenticated user
+# @name createProfile
+POST {{baseUrl}}/api/members/profile
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Jane Smith",
+  "gender": "Female",
+  "dateOfBirth": "1992-08-22",
+  "city": "Los Angeles",
+  "country": "USA",
+  "description": "Full-stack developer, loves hiking and photography"
+}
+
+### Update member profile for authenticated user
+PUT {{baseUrl}}/api/members/profile
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "displayName": "Jane Smith Updated",
+  "description": "Updated: Senior full-stack developer, loves hiking, photography, and DDD",
+  "city": "San Diego",
+  "country": "USA"
+}
+
+# ============================================
+# PHOTO MANAGEMENT ENDPOINTS (Require Auth)
+# ============================================
+
+### Get all photos for a member
+GET {{baseUrl}}/api/members/{{createProfile.response.body.$.id}}/photos
+Authorization: Bearer {{token}}
+
+### Upload a photo for authenticated member
+# Note: Replace with actual file path
+# @name uploadPhoto
+POST {{baseUrl}}/api/members/add-photo
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data
+
+< ./test-photo.jpg
+
+### Set a photo as main/profile photo
+# Replace photo-123 with actual photo ID from upload response
+PUT {{baseUrl}}/api/members/set-main-photo/{{uploadPhoto.response.body.$.id}}
+Authorization: Bearer {{token}}
+
+### Delete a photo for authenticated member
+DELETE {{baseUrl}}/api/members/delete-photo/{{uploadPhoto.response.body.$.id}}
+Authorization: Bearer {{token}}
+
+# ============================================
+# ERROR SCENARIOS
+# ============================================
+
+### Register with existing email (should return 400)
+POST {{baseUrl}}/api/account/register
+Content-Type: application/json
+
+{
+  "email": "jane.smith@example.com",
+  "password": "DifferentPassword789",
+  "name": "Duplicate User"
+}
+
+### Login with wrong password (should return 401)
+POST {{baseUrl}}/api/account/login
+Content-Type: application/json
+
+{
+  "email": "jane.smith@example.com",
+  "password": "WrongPassword"
+}
+
+### Access protected endpoint without token (should return 401)
+GET {{baseUrl}}/api/members/me
+
+### Access protected endpoint with invalid token (should return 401)
+GET {{baseUrl}}/api/members/me
+Authorization: Bearer invalid-token
+
+### Get non-existent member (should return 404)
+GET {{baseUrl}}/api/members/non-existent-id
+Authorization: Bearer {{token}}
+
+### Create profile when already exists (should return 400)
+POST {{baseUrl}}/api/members/profile
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Duplicate Profile",
+  "gender": "Male",
+  "dateOfBirth": "1990-01-01",
+  "city": "City",
+  "country": "Country"
+}
+
+### Update profile without creating first (should return 404)
+# Use token2 (user without profile)
+PUT {{baseUrl}}/api/members/profile
+Content-Type: application/json
+Authorization: Bearer {{token2}}
+
+{
+  "displayName": "Test",
+  "description": "Test",
+  "city": "City",
+  "country": "Country"
+}
+
+### Upload invalid file type (should return 400)
+POST {{baseUrl}}/api/members/add-photo
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data
+
+< ./test-document.pdf
+
+### Upload file too large (should return 413)
+# Create a file > 10MB and upload
+# POST {{baseUrl}}/api/members/add-photo
+# Authorization: Bearer {{token}}
+# Content-Type: multipart/form-data
+# < ./large-file.jpg
+
+# ============================================
+# DOCUMENTATION ENDPOINTS
+# ============================================
+
+### OpenAPI JSON specification
+GET {{baseUrl}}/openapi/v1.json
+
+### Scalar API Reference UI
+GET {{baseUrl}}/scalar/v1
+
+# ============================================
+# EXAMPLE RESPONSES (for reference)
+# ============================================
+
+# Register/Login Response (UserResponse):
+# {
+#   "id": "user-abc123",
+#   "email": "jane.smith@example.com",
+#   "name": "Jane Smith",
+#   "imageUrl": "",
+#   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+# }
+
+# Member Response (MemberResponse):
+# {
+#   "id": "member-xyz789",
+#   "name": "Jane Smith",
+#   "gender": "Female",
+#   "description": "Full-stack developer...",
+#   "city": "Los Angeles",
+#   "country": "USA",
+#   "imageUrl": "https://cloudinary.com/...",
+#   "dateOfBirth": "1992-08-22",
+#   "createdAt": "2026-11-20T02:30:00Z",
+#   "lastActiveAt": "2026-11-20T02:30:00Z",
+#   "photos": [
+#     {
+#       "id": "photo-123",
+#       "url": "https://cloudinary.com/...",
+#       "publicId": "lunex/members/member-xyz789/photo-123"
+#     }
+#   ]
+# }
+
+# Paginated Response (PaginatedResult<MemberResponse>):
+# {
+#   "metadata": {
+#     "currentPage": 1,
+#     "totalPages": 5,
+#     "pageSize": 10,
+#     "totalCount": 47
+#   },
+#   "items": [
+#     { ... MemberResponse ... },
+#     { ... MemberResponse ... }
+#   ]
+# }
+
+# Photo Response (PhotoResponse):
+# {
+#   "id": "photo-123",
+#   "url": "https://cloudinary.com/...",
+#   "publicId": "lunex/members/member-xyz789/photo-123"
+# }
+
+# Photo Upload Result (PhotoUploadResult):
+# {
+#   "url": "https://cloudinary.com/...",
+#   "publicId": "lunex/members/member-xyz789/photo-123",
+#   "width": 500,
+#   "height": 500,
+#   "format": "jpg"
+# }

@@ -1,0 +1,97 @@
+@baseUrl = http://localhost:5000
+@token =
+
+### Register a new user
+# @name register
+POST {{baseUrl}}/api/account/register
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "SecurePassword123",
+  "name": "John Doe"
+}
+
+### Login user
+# @name login
+POST {{baseUrl}}/api/account/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "SecurePassword123"
+}
+
+### Get token from login response
+@token = {{login.response.body.$.token}}
+
+### Get all members (paginated)
+GET {{baseUrl}}/api/members?pageNumber=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### Get members with gender filter
+GET {{baseUrl}}/api/members?pageNumber=1&pageSize=10&gender=Male
+Authorization: Bearer {{token}}
+
+### Get members excluding current user
+GET {{baseUrl}}/api/members?pageNumber=1&pageSize=10&currentMemberId=user-123
+Authorization: Bearer {{token}}
+
+### Get member by ID
+GET {{baseUrl}}/api/members/member-123
+Authorization: Bearer {{token}}
+
+### Get current user's member profile
+GET {{baseUrl}}/api/members/me
+Authorization: Bearer {{token}}
+
+### Create member profile for authenticated user
+POST {{baseUrl}}/api/members/profile
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "John Doe",
+  "gender": "Male",
+  "dateOfBirth": "1990-05-15",
+  "city": "New York",
+  "country": "USA",
+  "description": "Software developer passionate about clean code and DDD"
+}
+
+### Update member profile for authenticated user
+PUT {{baseUrl}}/api/members/profile
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "displayName": "John Doe Updated",
+  "description": "Updated bio - Senior software engineer",
+  "city": "San Francisco",
+  "country": "USA"
+}
+
+### Get all photos for a member
+GET {{baseUrl}}/api/members/member-123/photos
+Authorization: Bearer {{token}}
+
+### Upload a photo for authenticated member
+POST {{baseUrl}}/api/members/add-photo
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data
+
+< ./test-photo.jpg
+
+### Set a photo as main/profile photo
+PUT {{baseUrl}}/api/members/set-main-photo/photo-123
+Authorization: Bearer {{token}}
+
+### Delete a photo for authenticated member
+DELETE {{baseUrl}}/api/members/delete-photo/photo-123
+Authorization: Bearer {{token}}
+
+### Health check / OpenAPI docs
+GET {{baseUrl}}/openapi/v1.json
+
+### Scalar API Reference
+GET {{baseUrl}}/scalar/v1

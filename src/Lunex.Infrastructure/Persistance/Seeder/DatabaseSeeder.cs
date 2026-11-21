@@ -1,10 +1,9 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-
-using Lunex.Application.Common.Services.Abstractions;
-using Lunex.Domain.Enitities.Members;
-using Lunex.Domain.Enitities.Photos;
-using Lunex.Domain.Enitities.Users;
+﻿using Lunex.Application.Common.Services.Abstractions;
+using Lunex.Domain.Identity.Aggregates;
+using Lunex.Domain.Identity.Services;
+using Lunex.Domain.Identity.ValueObjects;
+using Lunex.Domain.Member.Aggregates;
+using Lunex.Domain.Member.ValueObjects;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,17 +18,18 @@ public static class DatabaseSeeder
         using var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var dateTimeProvider = scope.ServiceProvider.GetRequiredService<IDateTimeProvider>();
+        var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
 
         logger.LogInformation("Starting database seeding...");
 
-        await SeedUsersAsync(dbContext, logger);
+        await SeedUsersAsync(dbContext, logger, passwordHasher);
         await SeedMembersAsync(dbContext, logger, dateTimeProvider);
         await SeedPhotosAsync(dbContext, logger);
 
         logger.LogInformation("Database seeding completed.");
     }
 
-    private static async Task SeedUsersAsync(ApplicationDbContext dbContext, ILogger logger)
+    private static async Task SeedUsersAsync(ApplicationDbContext dbContext, ILogger logger, IPasswordHasher passwordHasher)
     {
         if (await dbContext.Users.AnyAsync())
         {
@@ -39,11 +39,11 @@ public static class DatabaseSeeder
 
         var users = new List<User>
         {
-            CreateUser("admin@lunex.com", "Admin User", "Admin@123"),
-            CreateUser("john.doe@lunex.com", "John Doe", "Password@123"),
-            CreateUser("jane.smith@lunex.com", "Jane Smith", "Password@123"),
-            CreateUser("bob.wilson@lunex.com", "Bob Wilson", "Password@123"),
-            CreateUser("alice.brown@lunex.com", "Alice Brown", "Password@123"),
+            CreateUser("admin@lunex.com", "Admin User", "Admin@123", passwordHasher),
+            CreateUser("john.doe@lunex.com", "John Doe", "Password@123", passwordHasher),
+            CreateUser("jane.smith@lunex.com", "Jane Smith", "Password@123", passwordHasher),
+            CreateUser("bob.wilson@lunex.com", "Bob Wilson", "Password@123", passwordHasher),
+            CreateUser("alice.brown@lunex.com", "Alice Brown", "Password@123", passwordHasher),
         };
 
         await dbContext.Users.AddRangeAsync(users);
@@ -98,49 +98,31 @@ public static class DatabaseSeeder
             return;
         }
 
-        var photos = new List<Photo>
-        {
-            new() { Id = Guid.NewGuid().ToString(), Url = "https://api.dicebear.com/7.x/avataaars/svg?seed=admin", PublicId = "admin_avatar", Member = members[0] },
-            new() { Id = Guid.NewGuid().ToString(), Url = "https://api.dicebear.com/7.x/avataaars/svg?seed=john", PublicId = "john_avatar", Member = members[1] },
-            new() { Id = Guid.NewGuid().ToString(), Url = "https://api.dicebear.com/7.x/avataaars/svg?seed=jane", PublicId = "jane_avatar", Member = members[2] },
-            new() { Id = Guid.NewGuid().ToString(), Url = "https://api.dicebear.com/7.x/avataaars/svg?seed=bob", PublicId = "bob_avatar", Member = members[3] },
-            new() { Id = Guid.NewGuid().ToString(), Url = "https://api.dicebear.com/7.x/avataaars/svg?seed=alice", PublicId = "alice_avatar", Member = members[4] },
-        };
+        // Add photos using the Member aggregate's AddPhoto method
+        members[0].AddPhoto("https://api.dicebear.com/7.x/avataaars/svg?seed=admin", "admin_avatar", true);
+        members[1].AddPhoto("https://api.dicebear.com/7.x/avataaars/svg?seed=john", "john_avatar", true);
+        members[2].AddPhoto("https://api.dicebear.com/7.x/avataaars/svg?seed=jane", "jane_avatar", true);
+        members[3].AddPhoto("https://api.dicebear.com/7.x/avataaars/svg?seed=bob", "bob_avatar", true);
+        members[4].AddPhoto("https://api.dicebear.com/7.x/avataaars/svg?seed=alice", "alice_avatar", true);
 
-        await dbContext.Photos.AddRangeAsync(photos);
         await dbContext.SaveChangesAsync();
 
-        logger.LogInformation("Seeded {Count} photos.", photos.Count);
+        logger.LogInformation("Seeded photos for {Count} members.", members.Count);
     }
 
-    private static User CreateUser(string email, string name, string password)
+    private static User CreateUser(string email, string name, string password, IPasswordHasher passwordHasher)
     {
-        using var hmac = new HMACSHA512();
-        return new User
-        {
-            Id = Guid.NewGuid().ToString(),
-            Email = email,
-            Name = name,
-            PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password)),
-            PasswordSalt = hmac.Key,
-            ImageUrl = $"https://api.dicebear.com/7.x/avataaars/svg?seed={email.Split('@')[0]}"
-        };
+        return User.Register(Email.Create(email), password, passwordHasher, name);
     }
 
     private static Member CreateMember(string userId, string name, string gender, string description, string city, string country, DateOnly dateOfBirth, DateTime now)
     {
-        return new Member
-        {
-            Id = userId,
-            Name = name,
-            Gender = gender,
-            Description = description,
-            City = city,
-            Country = country,
-            DateOfBirth = dateOfBirth,
-            CreatedAt = now,
-            LastActiveAt = now,
-            ImageUrl = $"https://api.dicebear.com/7.x/avataaars/svg?seed={name.ToLower().Replace(" ", "")}"
-        };
+        return Member.CreateProfile(
+            userId,
+            name,
+            GenderExtensions.Parse(gender),
+            DateOfBirth.Create(dateOfBirth),
+            Location.Create(city, country),
+            description);
     }
 }

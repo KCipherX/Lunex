@@ -1,35 +1,43 @@
-﻿using Lunex.Application.Accounts.Persistance.Abstractions;
-using Lunex.Domain.Enitities.Users;
+﻿using Lunex.Domain.Identity.Aggregates;
+using Lunex.Domain.Identity.Repositories;
+using Lunex.Domain.Identity.ValueObjects;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace Lunex.Infrastructure.Persistance.Repositories;
 
-public sealed class AccountRepository(ApplicationDbContext db) : IAccountRepository
+public sealed class UserRepository(ApplicationDbContext db) : IUserRepository
 {
-    public async Task<User?> RegisterAsync(User user, CancellationToken cancellationToken)
+    public async Task<User?> GetByIdAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        return await db.Users
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Id == userId, cancellationToken);
+    }
+
+    public async Task<User?> GetByEmailAsync(Email email, CancellationToken cancellationToken = default)
+    {
+        return await db.Users
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Email.Value == email.Value, cancellationToken);
+    }
+
+    public async Task AddAsync(User user, CancellationToken cancellationToken = default)
     {
         await db.Users.AddAsync(user, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
-
-        return user;
     }
 
-    public async Task<bool> EmailExistsAsync(string email, CancellationToken cancellationToken)
+    public async Task UpdateAsync(User user, CancellationToken cancellationToken = default)
     {
-        var emailExists = await db.Users
-            .AsNoTracking()
-            .AnyAsync(user => user.Email.ToLower() == email.ToLower(), cancellationToken);
-
-        return emailExists;
+        db.Entry(user).State = EntityState.Modified;
+        await db.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
+    public async Task<bool> ExistsByEmailAsync(Email email, CancellationToken cancellationToken = default)
     {
-        var user = await db.Users
+        return await db.Users
             .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Email == email, cancellationToken);
-
-        return user;
+            .AnyAsync(x => x.Email.Value == email.Value, cancellationToken);
     }
 }

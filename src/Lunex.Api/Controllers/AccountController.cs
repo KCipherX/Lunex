@@ -1,9 +1,5 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-
-using Lunex.Api.Extensions.Accounts;
-using Lunex.Application.Accounts.Services.Abstractions;
-using Lunex.Application.Common.Services.Abstractions;
+﻿using Lunex.Api.Extensions.Accounts;
+using Lunex.Application.Identity.Services;
 using Lunex.Contracts.Accounts.Common.Responses;
 using Lunex.Contracts.Accounts.Login.Requests;
 using Lunex.Contracts.Accounts.Register.Requests;
@@ -20,12 +16,12 @@ namespace Lunex.Api.Controllers;
 [AllowAnonymous]
 [ApiController]
 [Produces("application/json")]
-public sealed class AccountController(IAccountService accountService, IJwtTokenGenerator jwtTokenGenerator, IDateTimeProvider dateTimeProvider) : ApiController
+public sealed class AccountController(IIdentityService identityService) : ApiController
 {
     /// <summary>
-    /// Registers a new user account.
+    /// Registers a new user account (authentication only).
     /// </summary>
-    /// <param name="request">The registration request containing user details.</param>
+    /// <param name="request">The registration request containing email and password.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The registered user with JWT token.</returns>
     /// <response code="200">Returns the registered user with token.</response>
@@ -35,19 +31,16 @@ public sealed class AccountController(IAccountService accountService, IJwtTokenG
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] RegisterUserRequest request, CancellationToken cancellationToken)
     {
-        var user = request.FromDto(dateTimeProvider);
+        var (email, password, name) = request.ToCommandPrimitives();
+        var tokenResult = await identityService.RegisterAsync(email, password, name, cancellationToken);
 
-        var emailExists = await accountService.EmailExistsAsync(
-            user.Email,
-            cancellationToken);
-
-        if (emailExists) return BadRequest("Email exists");
-
-        var userResponse = await accountService.RegisterAsync(
-            user,
-            cancellationToken);
-
-        var response = userResponse?.ToDto(jwtTokenGenerator);
+        // Get the created user to populate the response with user details
+        var user = await identityService.GetByEmailAsync(email, cancellationToken);
+        var response = tokenResult.ToUserResponse(
+            user?.Id ?? string.Empty,
+            email,
+            name,
+            user?.ImageUrl);
 
         return Ok(response);
     }
@@ -65,21 +58,33 @@ public sealed class AccountController(IAccountService accountService, IJwtTokenG
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login([FromBody] LoginUserRequest request, CancellationToken cancellationToken)
     {
-        var user = await accountService.GetByEmailAsync(
-            email: request.Email,
-            cancellationToken: cancellationToken);
+        var (email, password) = request.ToCommandPrimitives();
+        var tokenResult = await identityService.LoginAsync(email, password, cancellationToken);
 
-        if (user is null) return Unauthorized("Invalid email address");
-
-        using var hmac = new HMACSHA512(user.PasswordSalt);
-
-        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
-
-        for (var i = 0; i < computedHash.Length; i++)
-            if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password");
-
-        var response = user.ToDto(jwtTokenGenerator);
+        // Get the authenticated user to populate the response with user details
+        var user = await identityService.GetByEmailAsync(email, cancellationToken);
+        var response = tokenResult.ToUserResponse(
+            user?.Id ?? string.Empty,
+            email,
+            user?.Name,
+            user?.ImageUrl);
 
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Test endpoint to verify JSON serialization.
+    /// </summary>
+    /// <returns>A simple test response.</returns>
+    /// <response code="200">Returns a test response.</response>
+    [HttpGet("test")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    public IActionResult Test()
+    {
+        var response = "Test response from AccountController";
+        System.Console.WriteLine($"Test endpoint called, returning: {response}");
+        var result = Ok(response);
+        System.Console.WriteLine($"Ok result: {result.GetType().Name}");
+        return result;
     }
 }

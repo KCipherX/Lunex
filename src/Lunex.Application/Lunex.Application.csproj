@@ -7,14 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lunex.Contracts\Lunex.Contracts.csproj" />
     <ProjectReference Include="..\Lunex.Domain\Lunex.Domain.csproj" />
+</ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Identity\DTOs\" />
   </ItemGroup>
 
 </Project>

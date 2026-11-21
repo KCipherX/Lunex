@@ -31,6 +31,10 @@ app.UseHttpsRedirection();
 app.UseCors(CorsSettings.PolicyName);
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Test endpoint directly in Program.cs
+app.MapGet("/api/test-direct", () => "Direct test response");
+
 app.MapControllers();
 
 await app.RunAsync();

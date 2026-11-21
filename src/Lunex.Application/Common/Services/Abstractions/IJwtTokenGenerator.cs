@@ -1,4 +1,4 @@
-﻿using Lunex.Domain.Enitities.Users;
+﻿using Lunex.Domain.Identity.Aggregates;
 
 namespace Lunex.Application.Common.Services.Abstractions;
 

@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Lunex.Application\Lunex.Application.csproj" />
-    <ProjectReference Include="..\Lunex.Contracts\Lunex.Contracts.csproj" />
-  </ItemGroup>
+    <ProjectReference Include="..\Lunex.Domain\Lunex.Domain.csproj" />
+</ItemGroup>
 
 </Project>

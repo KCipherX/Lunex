@@ -1,6 +1,7 @@
-﻿using Lunex.Application.Accounts.Persistance.Abstractions;
-using Lunex.Application.Common.Services.Abstractions;
-using Lunex.Application.Members.Persistence.Abstractions;
+﻿using Lunex.Application.Common.Services.Abstractions;
+using Lunex.Domain.Identity.Repositories;
+using Lunex.Domain.Identity.Services;
+using Lunex.Domain.Member.Repositories;
 using Lunex.Infrastructure.Persistance;
 using Lunex.Infrastructure.Persistance.Repositories;
 using Lunex.Infrastructure.Persistence;
@@ -34,9 +35,8 @@ public static class DependencyInjection
             .MigrationsHistoryTable(HistoryRepository.DefaultTableName, Constants.Schemas.Application))
             .UseSnakeCaseNamingConvention());
 
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IMemberRepository, MemberRepository>();
-
-        services.AddScoped<IAccountRepository, AccountRepository>();
 
         return services;
     }
@@ -44,6 +44,7 @@ public static class DependencyInjection
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<IPhotoService, PhotoService>();
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
 
         return services;
     }

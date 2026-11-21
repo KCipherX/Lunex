@@ -2,10 +2,11 @@
 
 using Lunex.Api.Exceptions;
 using Lunex.Api.Filters;
+using Lunex.Application;
 using Lunex.Application.Common.Configurations;
-using Lunex.Application.Common.Services.Abstractions;
 using Lunex.Application.Common.Services.Implementations;
 using Lunex.Domain.Settings;
+using Lunex.Infrastructure;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,8 @@ public static class DepencencyInjection
         IConfiguration configuration)
     {
         services
+            .AddApplication(configuration)
+            .AddInfrastructure(configuration)
             .AddApiDocumentation()
             .AddCors(configuration)
             .AddControllersAndItsConfigurations()
@@ -31,14 +34,32 @@ public static class DepencencyInjection
     private static IServiceCollection AddApiDocumentation(this IServiceCollection services)
     {
         return services
-            .AddOpenApi(options => options
-            .AddDocumentTransformer((document, context, cancellationToken) =>
+            .AddOpenApi(options =>
             {
-                document.Info.Title = "Lunex API";
-                document.Info.Version = "v1";
-                document.Info.Description = "Lunex API for member management and authentication";
-                return Task.CompletedTask;
-            }));
+                options.AddDocumentTransformer((document, context, cancellationToken) =>
+                {
+                    document.Info.Title = "Lunex API";
+                    document.Info.Version = "v1";
+                    document.Info.Description = """
+                        Lunex API for member management and authentication.
+
+                        ## Features
+                        - **Authentication**: User registration and JWT-based login
+                        - **Member Profiles**: Create, read, update member profiles with photos
+                        - **Photo Management**: Upload, set main, delete photos via Cloudinary
+                        - **Filtering & Pagination**: Filter members by gender, exclude current user
+
+                        ## Authentication
+                        All member endpoints require JWT Bearer token authentication.
+                        Obtain token via `POST /api/account/login` or `POST /api/account/register`.
+
+                        ## Rate Limits
+                        - Photo upload: 10MB max file size
+                        - Supported formats: JPG, JPEG, PNG, GIF, WebP
+                        """;
+                    return Task.CompletedTask;
+                });
+            });
     }
 
     private static IServiceCollection AddCors(this IServiceCollection services,
@@ -80,7 +101,6 @@ public static class DepencencyInjection
 
     private static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Section));
         services.ConfigureOptions<JwtBearerTokenValidationConfiguration>()
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

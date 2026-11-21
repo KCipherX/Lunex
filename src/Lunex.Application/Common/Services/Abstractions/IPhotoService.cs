@@ -1,4 +1,4 @@
-using Lunex.Contracts.Members.Responses;
+using Lunex.Application.Common.Services.Models;
 
 namespace Lunex.Application.Common.Services.Abstractions;
 

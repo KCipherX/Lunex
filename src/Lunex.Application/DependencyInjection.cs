@@ -1,10 +1,8 @@
-﻿using Lunex.Application.Accounts.Services.Abstractions;
-using Lunex.Application.Accounts.Services.Implementations;
-using Lunex.Application.Common.Configurations;
+﻿using Lunex.Application.Common.Configurations;
 using Lunex.Application.Common.Services.Abstractions;
 using Lunex.Application.Common.Services.Implementations;
-using Lunex.Application.Members.Services.Abstractions;
-using Lunex.Application.Members.Services.Implementations;
+using Lunex.Application.Identity.Services;
+using Lunex.Application.Member.Services;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,10 +17,12 @@ public static class DependencyInjection
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.Section));
         services.Configure<CloudinarySettings>(configuration.GetSection(CloudinarySettings.SectionName));
 
-        services.AddScoped<IMemberService, MemberService>();
-        services.AddScoped<IAccountService, AccountService>();
-        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
+        services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IMemberService, MemberService>();
+
+        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
         return services;

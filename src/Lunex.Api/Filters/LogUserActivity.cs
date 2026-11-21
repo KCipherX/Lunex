@@ -1,5 +1,5 @@
 ﻿using Lunex.Api.Extensions.Utilities;
-using Lunex.Application.Members.Services.Abstractions;
+using Lunex.Application.Member.Services;
 
 using Microsoft.AspNetCore.Mvc.Filters;
 

@@ -3,7 +3,7 @@ using CloudinaryDotNet.Actions;
 
 using Lunex.Application.Common.Configurations;
 using Lunex.Application.Common.Services.Abstractions;
-using Lunex.Contracts.Members.Responses;
+using Lunex.Application.Common.Services.Models;
 
 using Microsoft.Extensions.Options;
 

@@ -4,7 +4,7 @@ using System.Text;
 
 using Lunex.Application.Common.Configurations;
 using Lunex.Application.Common.Services.Abstractions;
-using Lunex.Domain.Enitities.Users;
+using Lunex.Domain.Identity.Aggregates;
 
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -30,8 +30,8 @@ public sealed class JwtTokenGenerator(IOptions<JwtSettings> _jwtOptions, IDateTi
         var claims = new Claim[]
         {
             new(JwtRegisteredClaimNames.Sub, user.Id),
-            new(JwtRegisteredClaimNames.GivenName, user.Name),
-            new(JwtRegisteredClaimNames.Email, user.Email),
+            new(JwtRegisteredClaimNames.GivenName, user.Name ?? string.Empty),
+            new(JwtRegisteredClaimNames.Email, user.Email.Value),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.NameId, user.Id)
         };
